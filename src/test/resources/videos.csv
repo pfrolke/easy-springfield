@@ -1,0 +1,3 @@
+SRC,DOMAIN,USER,COLLECTION,PRESENTATION,REQUIRE-TICKET
+sample.mp4,dans,user01,coll01,pres01,false
+sub/dir/to/more/vid01.mp4,dans,user01,coll01,pres02,true
