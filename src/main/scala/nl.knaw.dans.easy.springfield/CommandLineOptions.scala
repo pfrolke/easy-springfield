@@ -16,7 +16,6 @@
 package nl.knaw.dans.easy.springfield
 
 import java.nio.file.{ Path, Paths }
-import java.util.UUID
 
 import org.apache.commons.configuration.PropertiesConfiguration
 import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand, singleArgConverter }
@@ -136,10 +135,11 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   addSubcommand(setRequireTicket)
 
   val createTicket = new Subcommand("create-ticket") {
-    descr("Creates and registers an authorization ticket for a specified presentation.")
+    descr("""Creates and registers an authorization ticket for a specified presentation.
+            |If no ticket is specificied a random one is generated.""".stripMargin)
     val path: ScallopOption[Path] = trailArg(name = "springfield-path", descr = "The presentation to create the ticket for")
     val expiresAfterSeconds: ScallopOption[Long] = opt(name = "expires-after-seconds", short = 'e', default = Some(60 * 5))
-    val ticket: ScallopOption[String] = opt(name = "ticket", short = 't', default = Some(UUID.randomUUID.toString))
+    val ticket: ScallopOption[String] = opt(name = "ticket", short = 't', default = None)
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(createTicket)

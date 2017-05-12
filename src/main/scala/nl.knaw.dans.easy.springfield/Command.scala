@@ -16,6 +16,7 @@
 package nl.knaw.dans.easy.springfield
 
 import java.nio.file.{ Path, Paths }
+import java.util.UUID
 
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
@@ -111,7 +112,7 @@ object Command extends App
         _ <- videos.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
       } yield s"Video(s) set to require-ticket = ${ cmd.requireTicket() }"
     case Some(cmd @ opts.createTicket) =>
-      createTicket(getCompletePath(cmd.path()), cmd.ticket(), cmd.expiresAfterSeconds()).map(_ => "Ticket created.")
+      createTicket(getCompletePath(cmd.path()), cmd.ticket.toOption.getOrElse(UUID.randomUUID.toString), cmd.expiresAfterSeconds()).map(_ => "Ticket created.")
     case Some(cmd @ opts.deleteTicket) =>
       deleteTicket(cmd.ticket()).map(_ => "Ticket deleted.")
     case Some(cmd @ opts.delete) =>
