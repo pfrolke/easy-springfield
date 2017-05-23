@@ -115,7 +115,7 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   addSubcommand(createSpringfieldActions)
 
   val status = new Subcommand("status") {
-    descr("Retrieve the status of content offered for ingestion into Springfield")
+    descr("Retrieves the status of content offered for ingestion into Springfield.")
     val domain: ScallopOption[String] = opt(name = "domain",
       descr = "limit to videos within this domain",
       default = Some("dans"))
@@ -127,7 +127,7 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   addSubcommand(status)
 
   val setRequireTicket = new Subcommand("set-require-ticket") {
-    descr("Sets or clears the 'require-ticket' flag for the specified presentation")
+    descr("Sets or clears the 'require-ticket' flag for the specified presentation.")
     val path: ScallopOption[Path] = trailArg(name = "springfield-path", descr = "The parent of items to change")
     val requireTicket: ScallopOption[String] = trailArg(name = "require-ticket", descr = "true|false")
     footer(SUBCOMMAND_SEPARATOR)
@@ -145,14 +145,14 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   addSubcommand(createTicket)
 
   val deleteTicket = new Subcommand("delete-ticket") {
-    descr("Delete a specified authorization ticket.")
+    descr("Deletes a specified authorization ticket.")
     val ticket: ScallopOption[String] = trailArg(name = "ticket")
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(deleteTicket)
 
   val delete = new Subcommand("delete") {
-    descr("Delete the item at the specified Springfield path")
+    descr("Deletes the item at the specified Springfield path.")
     val path: ScallopOption[Path] = trailArg(name = "path",
       descr = "the path pointing item to remove")
     val withReferencedItems: ScallopOption[Boolean] = opt(name = "with-referenced-items", short = 'r',
@@ -160,6 +160,33 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(delete)
+
+  val addVideoToPresentation = new Subcommand("add-video-to-presentation") {
+    descr("Adds a video to a presentation under a specified name.")
+    val video: ScallopOption[Path] = trailArg(name = "video",
+      descr = "referid of the video")
+    val name: ScallopOption[String] = trailArg(name = "name",
+      descr = "name to assign to the video in the presentation")
+    val presentation: ScallopOption[Path] = trailArg(name = "presentation",
+      descr = "the presentation, either a Springfield path or a referid")
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(addVideoToPresentation)
+
+  val addPresentationToCollection = new Subcommand("add-presentation-to-collection") {
+    descr("Adds a presentation to a collection under a specified name.")
+    val presentation: ScallopOption[Path] = trailArg(name = "presentation",
+      descr = "referid of the presentation")
+    val name: ScallopOption[String] = trailArg(name = "name",
+      descr = "name to assign to the presentation in the collection")
+    val collection: ScallopOption[Path] = trailArg(name = "collection",
+      descr = "the Springfield path of the collection")
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(addPresentationToCollection)
+
+
+
   footer("")
 }
 

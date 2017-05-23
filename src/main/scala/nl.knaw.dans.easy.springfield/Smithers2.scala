@@ -64,7 +64,7 @@ trait Smithers2 {
    * Sets or clears the requireTicket flag on the specified video. The path must point to the
    * actual video resource, not to a reference to the video
    *
-   * @param video path to the video
+   * @param video         path to the video
    * @param requireTicket true to set the flag, false to clear it
    * @return
    */
@@ -146,12 +146,55 @@ trait Smithers2 {
       }.flatten.map(_.distinct)
   }
 
+  def resolveToReferId(ppath: Path): Try[Path] = {
+    getXmlFromPath(ppath)
+      .map(_ \\ "@referid")
+      .map {
+        case refs if refs.size == 1 =>
+          val referid = refs.head.text
+          Paths.get(if (referid.startsWith("/")) referid.substring(1)
+                    else referid)
+        case _ => ppath
+      }
+  }
+
+  def addVideoRefToPresentation(videoReferId: Path, videoName: String, presentation: Path): Try[Unit] = {
+    for {
+      presentationReferId <- resolveToReferId(presentation)
+      _ = debug(s"Resolved to presentation referid: $presentationReferId")
+      uri = path2Uri(presentationReferId.resolve("videoplaylist/1/video/").resolve(videoName).resolve("attributes"))
+      response <- http("PUT", uri,
+        <fsxml>
+          <attributes>
+            <referid>{ "/" + getCompletePath(videoReferId).toString }</referid>
+          </attributes>
+        </fsxml>.toString)
+      if response.code == 200
+      _ <- checkResponseOk(response.body)
+    } yield ()
+  }
+
+  def addPresentationRefToCollection(presentationReferId: Path, presentationName: String, collection: Path): Try[Unit] = {
+    val uri = path2Uri(collection.resolve("presentation").resolve(presentationName).resolve("attributes"))
+    debug(s"PUT to $uri")
+    for {
+      response <- http("PUT", uri,
+        <fsxml>
+          <attributes>
+            <referid>{ "/" + getCompletePath(presentationReferId).toString }</referid>
+          </attributes>
+        </fsxml>.toString)
+      if response.code == 200
+      _ <- checkResponseOk(response.body)
+    } yield ()
+  }
+
   def getCompletePath(path: Path): Path = {
     if (path.getName(0).toString == "domain") path
     else Paths.get("domain", defaultDomain).resolve(path)
   }
 
-  private def path2Uri(path: Path): URI = {
+  def path2Uri(path: Path): URI = {
     new URI(smithers2BaseUri.getScheme,
       smithers2BaseUri.getUserInfo,
       smithers2BaseUri.getHost,
@@ -159,7 +202,7 @@ trait Smithers2 {
       Paths.get(smithers2BaseUri.getPath).resolve(getCompletePath(path)).toString, null, null)
   }
 
-  private def http(method: String, uri: URI, body: String = null) = Try {
+  def http(method: String, uri: URI, body: String = null) = Try {
     {
       if (body == null) Http(uri.toASCIIString)
       else Http(uri.toASCIIString).postData(body)

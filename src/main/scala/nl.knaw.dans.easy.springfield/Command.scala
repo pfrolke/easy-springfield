@@ -122,6 +122,10 @@ object Command extends App
         _ <- approveAction(list, """These items will be deleted.""")
         _ <- list.map(deletePath).collectResults
       } yield "Items deleted"
+    case Some(cmd @opts.addVideoToPresentation) =>
+      addVideoRefToPresentation(getCompletePath(cmd.video()), cmd.name(), cmd.presentation()).map(_ => "Video reference added.")
+    case Some(cmd @opts.addPresentationToCollection) =>
+      addPresentationRefToCollection(getCompletePath(cmd.presentation()), cmd.name(), cmd.collection()).map(_ => "Presentation reference added.")
     case _ => throw new IllegalArgumentException(s"Unknown command: ${ opts.subcommand }")
       Try { "Unknown command" }
   }
