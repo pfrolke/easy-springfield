@@ -124,6 +124,25 @@ trait Smithers2 {
     } yield ()
   }
 
+  def createPresentation(title: String, description: String, isPrivate: Boolean, targetUser: String, targetDomain: String): Try[String] = {
+    trace(title, description, targetUser, targetDomain)
+    val uri = path2Uri(Paths.get("domain", targetDomain, "user", targetUser, "presentation"))
+    for {
+      response <- http("POST", uri,
+        <fsxml>
+          <properties>
+            <title>{ title }</title>
+            <description>{ description }</description>
+          </properties>
+          <videoplaylist id="1"><properties><private>{ isPrivate }</private></properties></videoplaylist>
+        </fsxml>.toString)
+        if response.code == 200
+      xml <- checkResponseOk(response.body)
+      _ = debug(s"Return xml = ${xml.toString}")
+      referId <- Try { xml \ "properties" \ "uri" }
+    } yield referId.head.text
+  }
+
   def getReferencedPaths(path: Path): Try[Seq[Path]] = {
     getXmlFromPath(path)
       .map(_ \\ "@referid")

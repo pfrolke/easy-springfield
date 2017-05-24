@@ -58,7 +58,7 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     else s
 
   val listUsers = new Subcommand("list-users") {
-    descr("List users in a given domain")
+    descr("Lists users in a given domain")
     val domain: ScallopOption[String] = trailArg(name = "domain",
       descr = "the domain of which to list the users",
       default = Some(properties.getString("springfield.default-domain")))
@@ -68,7 +68,7 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
 
   val createUser = new Subcommand("create-user") {
     descr(
-      """Create a new user in the Springfield database. This does NOT generate a springfield-actions XML but
+      """Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
         |instead creates the user in Springfield right away.
       """.stripMargin.stripLineEnd)
     val user: ScallopOption[String] = trailArg(name = "user", descr = "User name for the new user")
@@ -81,13 +81,13 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
 
   val createCollection = new Subcommand("create-collection") {
     descr(
-      """Create a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
+      """Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
         |instead creates the collection in Springfield right away.
       """.stripMargin.stripLineEnd)
     val collection: ScallopOption[String] = trailArg(name = "collection", descr = "Name for the collection")
     val user: ScallopOption[String] = trailArg(name = "target-user", descr = "Existing user under which to store the collection")
     val targetDomain: ScallopOption[String] = opt(name = "target-domain",
-      descr = "The target domain in which to create the user",
+      descr = "The target domain in which to create the collection",
       default = Some(properties.getString("springfield.default-domain")))
     val title: ScallopOption[String] = opt(name = "title", short = 't',
       descr = "Title for the new collection", default = Some(""))
@@ -96,6 +96,23 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(createCollection)
+
+  val createPresentation = new Subcommand("create-presentation") {
+    descr(
+      """Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
+      """.stripMargin.stripLineEnd)
+    val user: ScallopOption[String] = trailArg(name = "target-user", descr = "Existing user under which to store the collection")
+    val targetDomain: ScallopOption[String] = opt(name = "target-domain",
+      descr = "The target domain in which to create the presentation",
+      default = Some(properties.getString("springfield.default-domain")))
+    val title: ScallopOption[String] = opt(name = "title", short = 't',
+      descr = "Title for the new presentation", default = Some(""))
+    val description: ScallopOption[String] = opt(name = "description", short = 'd',
+      descr = "Description for the new presentation", default = Some(""))
+    val requireTicket: ScallopOption[Boolean] = opt(name = "require-ticket", short = 'r')
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(createPresentation)
 
   val createSpringfieldActions = new Subcommand("create-springfield-actions") {
     descr(
@@ -184,6 +201,9 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(addPresentationToCollection)
+
+
+
 
 
 
