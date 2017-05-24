@@ -22,6 +22,7 @@ import scala.util.{ Failure, Success, Try }
 package object springfield {
   case class SpringfieldErrorException(errorCode: Int, message: String, details: String) extends Exception(s"($errorCode) $message: $details")
 
+  val MAX_NAME_LENGTH = 100
 
   object Version {
     def apply(): String = {

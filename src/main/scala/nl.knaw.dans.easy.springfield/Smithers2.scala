@@ -160,6 +160,9 @@ trait Smithers2 {
 
   def addVideoRefToPresentation(videoReferId: Path, videoName: String, presentation: Path): Try[Unit] = {
     for {
+      _ <- checkVideoReferId(videoReferId)
+      _ <- checkPresentation(presentation)
+      _ <- checkNameLength(videoName)
       presentationReferId <- resolveToReferId(presentation)
       _ = debug(s"Resolved to presentation referid: $presentationReferId")
       uri = path2Uri(presentationReferId.resolve("videoplaylist/1/video/").resolve(videoName).resolve("attributes"))
@@ -172,12 +175,16 @@ trait Smithers2 {
       if response.code == 200
       _ <- checkResponseOk(response.body)
     } yield ()
+
   }
 
   def addPresentationRefToCollection(presentationReferId: Path, presentationName: String, collection: Path): Try[Unit] = {
     val uri = path2Uri(collection.resolve("presentation").resolve(presentationName).resolve("attributes"))
     debug(s"PUT to $uri")
     for {
+      _ <- checkPresentation(presentationReferId, true)
+      _ <- checkCollection(collection)
+      _ <- checkNameLength(presentationName)
       response <- http("PUT", uri,
         <fsxml>
           <attributes>
@@ -188,6 +195,30 @@ trait Smithers2 {
       _ <- checkResponseOk(response.body)
     } yield ()
   }
+
+  def checkVideoReferId(videoReferId: Path): Try[Unit] = {
+    if (videoReferId.getNameCount > 3 && videoReferId.getName(videoReferId.getNameCount - 2).toString == "video") Success(())
+    else Failure(new IllegalArgumentException(s"$videoReferId does not appear to be a video referid. Expected format: [domain/<d>/]user/<u>/video/<number>"))
+  }
+
+  def checkPresentation(presentation: Path, allowOnlyReferId: Boolean = false): Try[Unit] = {
+    if (presentation.getNameCount > 3 && presentation.getName(presentation.getNameCount - 2).toString == "presentation") Success(())
+    else Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> " +
+      (if (allowOnlyReferId) ""
+       else s"OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>")))
+  }
+
+  def checkCollection(collection: Path): Try[Unit] = {
+    if (collection.getNameCount > 3 && collection.getName(collection.getNameCount - 2).toString == "collection") Success(())
+    else Failure(new IllegalArgumentException(s"$collection does not appear to be a collection Springfield path. Expected format: [domain/<d>/]user/<u>/collection/<name>"))
+  }
+
+
+  def checkNameLength(name: String): Try[Unit] = {
+    if (name.length <= MAX_NAME_LENGTH) Success(())
+    else Failure(new IllegalArgumentException(s"Name is longer than 100 chars: $name"))
+  }
+
 
   def getCompletePath(path: Path): Path = {
     if (path.getName(0).toString == "domain") path
