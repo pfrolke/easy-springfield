@@ -33,6 +33,7 @@
             </includes>
             <excludes>
                 <exclude>*.sh</exclude>
+                <exclude>version</exclude>
             </excludes>
         </fileSet>
         <fileSet>
@@ -50,14 +51,16 @@
                 <exclude>bin</exclude>
             </excludes>
         </fileSet>
-    </fileSets>
-    <files>
-        <file>
-            <source>${project.basedir}/src/main/assembly/dist/version</source>
-            <outputDirectory/>
+        <fileSet>
+            <directory>${project.basedir}/src/main/assembly/dist/bin</directory>
+            <outputDirectory>bin</outputDirectory>
             <filtered>true</filtered>
-        </file>
-    </files>
+            <includes>
+                <include>version</include>
+            </includes>
+            <fileMode>0444</fileMode>
+        </fileSet>
+    </fileSets>
     <dependencySets>
         <dependencySet>
             <outputDirectory>lib</outputDirectory>
