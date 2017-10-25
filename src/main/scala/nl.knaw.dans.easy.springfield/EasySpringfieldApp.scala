@@ -27,7 +27,7 @@ trait EasySpringfieldApp {
     with ListUsers
     with CreateSpringfieldActions =>
   private val cfgPath = Seq(
-    Paths.get("/usr/local/etc/dans/easy-springfield/"),
+    Paths.get("/etc/opt/dans.knaw.nl/easy-springfield/"),
     Paths.get(System.getProperty("app.home")).resolve("cfg/"))
 
   private val cfg = cfgPath.find(Files.exists(_)).get

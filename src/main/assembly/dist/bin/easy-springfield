@@ -2,7 +2,7 @@
 
 BINPATH=`command readlink -f $0 2> /dev/null || command grealpath $0 2> /dev/null`
 APPHOME=`dirname \`dirname $BINPATH \``
-ETC_LOGCONFIG=/usr/local/etc/dans/easy-springfield/logback.xml
+ETC_LOGCONFIG=/etc/opt/dans.knaw.nl/easy-springfield/logback.xml
 
 if [ -f $HOME/logback.xml ]
 then
