@@ -133,7 +133,7 @@ object Command extends App
   }
 
   result.map(msg => Console.err.println(s"OK: $msg"))
-    .onError(e => Console.err.println(s"FAILED: ${ e.getMessage }"))
+    .doIfFailure { case e => Console.err.println(s"FAILED: ${ e.getMessage }") }
 
   private def getUserList(domain: String): Try[Seq[String]] = {
     for {
