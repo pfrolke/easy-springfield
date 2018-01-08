@@ -17,8 +17,6 @@ package nl.knaw.dans.easy
 
 import java.util.Properties
 
-import scala.util.{ Failure, Success, Try }
-
 package object springfield {
   case class SpringfieldErrorException(errorCode: Int, message: String, details: String) extends Exception(s"($errorCode) $message: $details")
 
@@ -29,16 +27,6 @@ package object springfield {
       val props = new Properties()
       props.load(getClass.getResourceAsStream("/Version.properties"))
       props.getProperty("application.version")
-    }
-  }
-
-  implicit class TryExtensions[T](val t: Try[T]) extends AnyVal {
-    // TODO candidate for dans-scala-lib, see also implementation/documentation in easy-split-multi-deposit
-    def onError[S >: T](handle: Throwable => S): S = {
-      t match {
-        case Success(value) => value
-        case Failure(throwable) => handle(throwable)
-      }
     }
   }
 }
