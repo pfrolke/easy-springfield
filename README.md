@@ -168,11 +168,11 @@ resources referenced by it. Again, the user is asked to confirm such a delete ac
 ARGUMENTS
 ---------
 
-    --help      Show help message
-          --version   Show version of this program
+      -h, --help      Show help message
+      -v, --version   Show version of this program
     
     Subcommand: list-users - List users in a given domain
-          --help   Show help message
+      -h, --help   Show help message
     
      trailing arguments:
       domain (required)   the domain of which to list the users (default = dans)
@@ -183,7 +183,7 @@ ARGUMENTS
     
       -d, --target-domain  <arg>   The target domain in which to create the user
                                    (default = dans)
-          --help                   Show help message
+      -h, --help                   Show help message
     
      trailing arguments:
       user (required)   User name for the new user
@@ -196,7 +196,7 @@ ARGUMENTS
           --target-domain  <arg>   The target domain in which to create the user
                                    (default = dans)
       -t, --title  <arg>           Title for the new collection (default = )
-          --help                   Show help message
+      -h, --help                   Show help message
     
      trailing arguments:
       collection (required)    Name for the collection
@@ -211,7 +211,7 @@ ARGUMENTS
                                    collection) exist
       -v, --videos-folder  <arg>   Folder relative to which to resolve the SRC
                                    column in the CSV
-          --help                   Show help message
+      -h, --help                   Show help message
     
      trailing arguments:
       video-csv (required)   CSV file describing the videos
@@ -220,11 +220,11 @@ ARGUMENTS
     Subcommand: status - Retrieve the status of content offered for ingestion into Springfield
       -d, --domain  <arg>   limit to videos within this domain (default = dans)
       -u, --user  <arg>     limit to videos owned by this user
-          --help            Show help message
+      -h, --help            Show help message
     ---
     
     Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation
-          --help   Show help message
+      -h, --help   Show help message
     
      trailing arguments:
       springfield-path (required)   The parent of items to change
@@ -235,14 +235,14 @@ ARGUMENTS
       -e, --expires-after-seconds  <arg>    (default = 300)
       -t, --ticket  <arg>
                                            (default = 5f30d674-1e02-4cb2-95e7-eec3b7ed6e45)
-          --help                           Show help message
+      -h, --help                           Show help message
     
      trailing arguments:
       springfield-path (required)   The presentation to create the ticket for
     ---
     
     Subcommand: delete-ticket - Delete a specified authorization ticket.
-          --help   Show help message
+      -h, --help   Show help message
     
      trailing arguments:
       ticket (required)
@@ -251,7 +251,7 @@ ARGUMENTS
     Subcommand: delete - Delete the item at the specified Springfield path
       -r, --with-referenced-items   also remove items reference from <path>,
                                     recursively
-          --help                    Show help message
+      -h, --help                    Show help message
     
      trailing arguments:
       path (required)   the path pointing item to remove
