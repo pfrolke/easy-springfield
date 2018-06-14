@@ -20,14 +20,14 @@ import java.nio.file.{ Path, Paths }
 import org.apache.commons.configuration.PropertiesConfiguration
 import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand, singleArgConverter }
 
-class CommandLineOptions(args: Array[String], properties: PropertiesConfiguration) extends ScallopConf(args) {
+class CommandLineOptions(args: Array[String], properties: PropertiesConfiguration, version: String) extends ScallopConf(args) {
   appendDefaultToDescription = true
   editBuilder(_.setHelpWidth(110))
 
   printedName = "easy-springfield"
   private val _________ = " " * printedName.length
   private val SUBCOMMAND_SEPARATOR = "---\n"
-  version(s"$printedName v${ Version() }")
+  version(s"$printedName v$version")
   banner(
     s"""
        |Manage Springfield Web TV
@@ -202,14 +202,5 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   }
   addSubcommand(addPresentationToCollection)
 
-
-
-
-
-
   footer("")
-}
-
-object CommandLineOptions {
-  def apply(args: Array[String], properties: PropertiesConfiguration): CommandLineOptions = new CommandLineOptions(args, properties)
 }

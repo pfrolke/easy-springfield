@@ -17,6 +17,7 @@ package nl.knaw.dans.easy.springfield
 
 import java.nio.file.{ Path, Paths }
 import java.util.UUID
+import better.files.File
 
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
@@ -38,7 +39,8 @@ object Command extends App
 
   type FeedBackMessage = String
 
-  val opts = CommandLineOptions(args, properties)
+  val configuration = Configuration(File(System.getProperty("app.home")))
+  val opts = new CommandLineOptions(args, properties, configuration.version)
   opts.verify()
 
   val result: Try[FeedBackMessage] = opts.subcommand match {

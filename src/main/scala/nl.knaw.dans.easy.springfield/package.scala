@@ -15,18 +15,9 @@
  */
 package nl.knaw.dans.easy
 
-import java.util.Properties
-
 package object springfield {
   case class SpringfieldErrorException(errorCode: Int, message: String, details: String) extends Exception(s"($errorCode) $message: $details")
 
   val MAX_NAME_LENGTH = 100
 
-  object Version {
-    def apply(): String = {
-      val props = new Properties()
-      props.load(getClass.getResourceAsStream("/Version.properties"))
-      props.getProperty("application.version")
-    }
-  }
 }
