@@ -28,7 +28,7 @@
     <version>1.1.1-SNAPSHOT</version>
     <name>EASY Springfield Tools</name>
     <url>https://github.com/DANS-KNAW/easy-bag-store</url>
-    <description>Manage Springfield Web TV</description>
+    <description>Tools for managing a Springfield WebTV server.</description>
     <inceptionYear>2017</inceptionYear>
     <properties>
         <main-class>nl.knaw.dans.easy.springfield.Command</main-class>

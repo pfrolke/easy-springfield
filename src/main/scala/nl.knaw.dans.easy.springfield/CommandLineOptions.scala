@@ -27,17 +27,15 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   printedName = "easy-springfield"
   private val _________ = " " * printedName.length
   private val SUBCOMMAND_SEPARATOR = "---\n"
-  version(s"$printedName v$version")
-  banner(
+  val description: String = s"""Tools for managing a Springfield WebTV server."""
+  val synopsis: String =
     s"""
-       |Manage Springfield Web TV
-       |
-       |Usage:
-       |
-       |$printedName list-users [-d, --domain <arg>]
-       |$printedName create-user [-d, --target-domain <arg>]
+       |$printedName list-users <domain>
+       |$printedName create-user [-d, --target-domain <arg>] <username>
        |$printedName create-collection [-t, --title <arg>] [-d, --description <arg>] \\
        |    [--target-domain <arg>] <collection> <target-user>
+       |$printedName create-presentation [-t, --title <arg>] [-d, --description <arg>] \\
+       |    [-r, --require-ticket] [--target-domain <arg>] <target-user>
        |$printedName create-springfield-actions [-p, --check-parent-items] [-v, --videos-folder <arg>] \\
        |    <videos-csv> > springfield-actions.xml
        |$printedName status [-u, --user <arg>][-d, --domain <arg>]
@@ -46,8 +44,22 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
        |    <springfield-path>
        |$printedName delete-ticket <ticket>
        |$printedName delete [-r, --with-referenced-items] <springfield-path>
+       |$printedName add-video-to-presentation <video> <name> <springfield-path>
+       |$printedName add-presentation-to-collection <presentation> <name> <springfield-path>
+     """.stripMargin
+
+  version(s"$printedName v$version")
+
+  banner(
+    s"""
+       |  $description
        |
-            |Options:
+       |Usage:
+       |
+       |$synopsis
+       |
+       |Options:
+       |
        |""".stripMargin)
 
 
@@ -123,7 +135,7 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     val videosCsv: ScallopOption[Path] = trailArg(name = "video-csv",
       descr = "CSV file describing the videos",
       required = true)
-    val videosFolder: ScallopOption[Path] = opt(name = "videos-folder",
+    val videosFolder: ScallopOption[Path] = opt(name = "videos-folder", short = 'v' ,
       descr = "Folder relative to which to resolve the SRC column in the CSV")
     val checkParentItems: ScallopOption[Boolean] = opt(name = "check-parent-items", short = 'p',
       descr = "Check that parent items (domain, user, collection) exist")

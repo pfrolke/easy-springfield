@@ -7,18 +7,22 @@ Tools for managing a Springfield WebTV server.
 SYNOPSIS
 --------
 
-    easy-springfield list-users [-d, --domain <arg>]
-    easy-springfield create-user [-d, --target-domain <arg>]
+    easy-springfield list-users <domain>
+    easy-springfield create-user [-d, --target-domain <arg>] <username>
     easy-springfield create-collection [-t, --title <arg>] [-d, --description <arg>] \
         [--target-domain <arg>] <collection> <target-user>
+    easy-springfield create-presentation [-t, --title <arg>] [-d, --description <arg>] \
+        [-r, --require-ticket] [--target-domain <arg>] <target-user>
     easy-springfield create-springfield-actions [-p, --check-parent-items] [-v, --videos-folder <arg>] \
-        <videos-csv> > springfield-actions.xml   
+        <videos-csv> > springfield-actions.xml
     easy-springfield status [-u, --user <arg>][-d, --domain <arg>]
     easy-springfield set-require-ticket <springfield-path> {true|false}
     easy-springfield create-ticket [-e,--expires-after-seconds <arg>] [-t, --ticket <arg>] \
         <springfield-path>
     easy-springfield delete-ticket <ticket>
     easy-springfield delete [-r, --with-referenced-items] <springfield-path>
+    easy-springfield add-video-to-presentation <video> <name> <springfield-path>
+    easy-springfield add-presentation-to-collection <presentation> <name> <springfield-path>
     
     
 DESCRIPTION
@@ -170,91 +174,123 @@ ARGUMENTS
 
       -h, --help      Show help message
       -v, --version   Show version of this program
-    
-    Subcommand: list-users - List users in a given domain
+
+    Subcommand: list-users - Lists users in a given domain
       -h, --help   Show help message
-    
+
      trailing arguments:
       domain (required)   the domain of which to list the users (default = dans)
     ---
-    
-    Subcommand: create-user - Create a new user in the Springfield database. This does NOT generate a springfield-actions XML but
+
+    Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
     instead creates the user in Springfield right away.
-    
+
       -d, --target-domain  <arg>   The target domain in which to create the user
                                    (default = dans)
       -h, --help                   Show help message
-    
+
      trailing arguments:
       user (required)   User name for the new user
     ---
-    
-    Subcommand: create-collection - Create a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
+
+    Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
     instead creates the collection in Springfield right away.
-    
+
       -d, --description  <arg>     Description for the new collection (default = )
-          --target-domain  <arg>   The target domain in which to create the user
-                                   (default = dans)
+          --target-domain  <arg>   The target domain in which to create the
+                                   collection (default = dans)
       -t, --title  <arg>           Title for the new collection (default = )
       -h, --help                   Show help message
-    
+
      trailing arguments:
       collection (required)    Name for the collection
       target-user (required)   Existing user under which to store the collection
     ---
-    
+
+    Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
+
+      -d, --description  <arg>     Description for the new presentation (default = )
+      -r, --require-ticket
+          --target-domain  <arg>   The target domain in which to create the
+                                   presentation (default = dans)
+      -t, --title  <arg>           Title for the new presentation (default = )
+      -h, --help                   Show help message
+
+     trailing arguments:
+      target-user (required)   Existing user under which to store the collection
+    ---
+
     Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
     with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
     REQUIRE-TICKET.
-    
+
       -p, --check-parent-items     Check that parent items (domain, user,
                                    collection) exist
       -v, --videos-folder  <arg>   Folder relative to which to resolve the SRC
                                    column in the CSV
       -h, --help                   Show help message
-    
+
      trailing arguments:
       video-csv (required)   CSV file describing the videos
     ---
-    
-    Subcommand: status - Retrieve the status of content offered for ingestion into Springfield
+
+    Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
       -d, --domain  <arg>   limit to videos within this domain (default = dans)
       -u, --user  <arg>     limit to videos owned by this user
       -h, --help            Show help message
     ---
-    
-    Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation
+
+    Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
       -h, --help   Show help message
-    
+
      trailing arguments:
       springfield-path (required)   The parent of items to change
       require-ticket (required)     true|false
     ---
-    
+
     Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
+    If no ticket is specificied a random one is generated.
       -e, --expires-after-seconds  <arg>    (default = 300)
       -t, --ticket  <arg>
-                                           (default = 5f30d674-1e02-4cb2-95e7-eec3b7ed6e45)
       -h, --help                           Show help message
-    
+
      trailing arguments:
       springfield-path (required)   The presentation to create the ticket for
     ---
-    
-    Subcommand: delete-ticket - Delete a specified authorization ticket.
+
+    Subcommand: delete-ticket - Deletes a specified authorization ticket.
       -h, --help   Show help message
-    
+
      trailing arguments:
       ticket (required)
     ---
-    
-    Subcommand: delete - Delete the item at the specified Springfield path
+
+    Subcommand: delete - Deletes the item at the specified Springfield path.
       -r, --with-referenced-items   also remove items reference from <path>,
                                     recursively
       -h, --help                    Show help message
-    
+
      trailing arguments:
       path (required)   the path pointing item to remove
+    ---
+
+    Subcommand: add-video-to-presentation - Adds a video to a presentation under a specified name.
+      -h, --help   Show help message
+
+     trailing arguments:
+      video (required)          referid of the video
+      name (required)           name to assign to the video in the presentation
+      presentation (required)   the presentation, either a Springfield path or a
+                                referid
+    ---
+
+    Subcommand: add-presentation-to-collection - Adds a presentation to a collection under a specified name.
+      -h, --help   Show help message
+
+     trailing arguments:
+      presentation (required)   referid of the presentation
+      name (required)           name to assign to the presentation in the collection
+      collection (required)     the Springfield path of the collection
     ---
 
 
