@@ -116,26 +116,40 @@ object Command extends App
         _ <- videos.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
       } yield s"Video(s) set to require-ticket = ${ cmd.requireTicket() }"
     case Some(cmd @ opts.createTicket) =>
-      createTicket(getCompletePath(cmd.path()), cmd.ticket.toOption.getOrElse(UUID.randomUUID.toString), cmd.expiresAfterSeconds()).map(_ => "Ticket created.")
+      for {
+        _ <- checkPathIsRelative(cmd.path())
+        _ <- createTicket(getCompletePath(cmd.path()), cmd.ticket.toOption.getOrElse(UUID.randomUUID.toString), cmd.expiresAfterSeconds())
+      } yield "Ticket created"
     case Some(cmd @ opts.deleteTicket) =>
       deleteTicket(cmd.ticket()).map(_ => "Ticket deleted.")
     case Some(cmd @ opts.delete) =>
       for {
+        _ <- checkPathIsRelative(cmd.path())
         list <- if (cmd.withReferencedItems()) getReferencedPaths(cmd.path()).map(_ :+ getCompletePath(cmd.path()))
                 else Success(Seq(cmd.path()))
         _ <- approveAction(list, """These items will be deleted.""")
         _ <- list.map(deletePath).collectResults
       } yield "Items deleted"
     case Some(cmd @opts.addVideoToPresentation) =>
-      addVideoRefToPresentation(getCompletePath(cmd.video()), cmd.name(), cmd.presentation()).map(_ => "Video reference added.")
+      for {
+        _ <- checkPathIsRelative(cmd.video())
+        _ <- addVideoRefToPresentation (getCompletePath(cmd.video()), cmd.name(), cmd.presentation())
+      } yield "Video reference added."
     case Some(cmd @opts.addPresentationToCollection) =>
-      addPresentationRefToCollection(getCompletePath(cmd.presentation()), cmd.name(), cmd.collection()).map(_ => "Presentation reference added.")
+      for {
+        _ <- checkPathIsRelative(cmd.presentation())
+        _ <- addPresentationRefToCollection (getCompletePath(cmd.presentation()), cmd.name(), cmd.collection())
+      } yield "Presentation reference added."
     case _ => throw new IllegalArgumentException(s"Unknown command: ${ opts.subcommand }")
       Try { "Unknown command" }
   }
 
   result.map(msg => Console.err.println(s"OK: $msg"))
     .doIfFailure { case e => Console.err.println(s"FAILED: ${ e.getMessage }") }
+
+
+  private def checkPathIsRelative(path: Path): Try[Unit] =
+    Try { require(!path.isAbsolute, "Path MUST NOT start with a slash") }
 
   private def getUserList(domain: String): Try[Seq[String]] = {
     for {
