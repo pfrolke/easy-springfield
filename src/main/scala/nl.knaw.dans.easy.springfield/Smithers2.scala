@@ -21,10 +21,10 @@ import java.nio.file.{ Path, Paths }
 
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import scalaj.http.Http
 
 import scala.util.{ Failure, Success, Try }
 import scala.xml.{ Elem, XML }
-import scalaj.http.Http
 
 
 trait Smithers2 {
@@ -136,9 +136,9 @@ trait Smithers2 {
           </properties>
           <videoplaylist id="1"><properties><private>{ isPrivate }</private></properties></videoplaylist>
         </fsxml>.toString)
-        if response.code == 200
+      if response.code == 200
       xml <- checkResponseOk(response.body)
-      _ = debug(s"Return xml = ${xml.toString}")
+      _ = debug(s"Return xml = ${ xml.toString }")
       referId <- Try { xml \ "properties" \ "uri" }
     } yield referId.head.text
   }

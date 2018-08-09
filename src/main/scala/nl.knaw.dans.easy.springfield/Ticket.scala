@@ -62,9 +62,7 @@ trait Ticket {
     response.code match {
       case 200 => Success(())
       case 404 => Failure(new RuntimeException(s"Could not find ticket $ticket"))
-      case _ => Failure(new RuntimeException(s"Unable to remove ticket, response code = ${response.code}"))
+      case _ => Failure(new RuntimeException(s"Unable to remove ticket, response code = ${ response.code }"))
     }
   }
-
-
 }

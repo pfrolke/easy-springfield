@@ -18,7 +18,7 @@ package nl.knaw.dans.easy.springfield
 import java.nio.file.{ Path, Paths }
 
 import org.apache.commons.configuration.PropertiesConfiguration
-import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand, singleArgConverter }
+import org.rogach.scallop.{ singleArgConverter, ScallopConf, ScallopOption, Subcommand }
 
 class CommandLineOptions(args: Array[String], properties: PropertiesConfiguration, version: String) extends ScallopConf(args) {
   appendDefaultToDescription = true
@@ -135,7 +135,7 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     val videosCsv: ScallopOption[Path] = trailArg(name = "video-csv",
       descr = "CSV file describing the videos",
       required = true)
-    val videosFolder: ScallopOption[Path] = opt(name = "videos-folder", short = 'v' ,
+    val videosFolder: ScallopOption[Path] = opt(name = "videos-folder", short = 'v',
       descr = "Folder relative to which to resolve the SRC column in the CSV")
     val checkParentItems: ScallopOption[Boolean] = opt(name = "check-parent-items", short = 'p',
       descr = "Check that parent items (domain, user, collection) exist")
@@ -164,8 +164,9 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   addSubcommand(setRequireTicket)
 
   val createTicket = new Subcommand("create-ticket") {
-    descr("""Creates and registers an authorization ticket for a specified presentation.
-            |If no ticket is specificied a random one is generated.""".stripMargin)
+    descr(
+      """Creates and registers an authorization ticket for a specified presentation.
+        |If no ticket is specificied a random one is generated.""".stripMargin)
     val path: ScallopOption[Path] = trailArg(name = "springfield-path", descr = "The presentation to create the ticket for")
     val expiresAfterSeconds: ScallopOption[Long] = opt(name = "expires-after-seconds", short = 'e', default = Some(60 * 5))
     val ticket: ScallopOption[String] = opt(name = "ticket", short = 't', default = None)

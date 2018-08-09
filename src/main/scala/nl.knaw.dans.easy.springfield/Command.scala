@@ -17,8 +17,8 @@ package nl.knaw.dans.easy.springfield
 
 import java.nio.file.{ Path, Paths }
 import java.util.UUID
-import better.files.File
 
+import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
@@ -132,15 +132,15 @@ object Command extends App
         _ <- approveAction(list, """These items will be deleted.""")
         _ <- list.map(deletePath).collectResults
       } yield "Items deleted"
-    case Some(cmd @opts.addVideoToPresentation) =>
+    case Some(cmd @ opts.addVideoToPresentation) =>
       for {
         _ <- checkPathIsRelative(cmd.video())
-        _ <- addVideoRefToPresentation (getCompletePath(cmd.video()), cmd.name(), cmd.presentation())
+        _ <- addVideoRefToPresentation(getCompletePath(cmd.video()), cmd.name(), cmd.presentation())
       } yield "Video reference added."
-    case Some(cmd @opts.addPresentationToCollection) =>
+    case Some(cmd @ opts.addPresentationToCollection) =>
       for {
         _ <- checkPathIsRelative(cmd.presentation())
-        _ <- addPresentationRefToCollection (getCompletePath(cmd.presentation()), cmd.name(), cmd.collection())
+        _ <- addPresentationRefToCollection(getCompletePath(cmd.presentation()), cmd.name(), cmd.collection())
       } yield "Presentation reference added."
     case _ => throw new IllegalArgumentException(s"Unknown command: ${ opts.subcommand }")
       Try { "Unknown command" }
