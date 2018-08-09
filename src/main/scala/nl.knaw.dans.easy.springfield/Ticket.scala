@@ -19,9 +19,9 @@ import java.net.URI
 import java.nio.file.Path
 
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import scalaj.http.Http
 
 import scala.util.{ Failure, Success, Try }
-import scalaj.http.Http
 
 trait Ticket {
   this: DebugEnhancedLogging =>
@@ -42,14 +42,16 @@ trait Ticket {
             <expiry>{ System.currentTimeMillis / 1000 + expireAfterSec}</expiry>
         </properties>
       </fsxml>
-    val response = Http(lenny.toASCIIString)
-      .postData(fsXml.toString)
-      .method("POST")
-      .header("Content-Type", "text/xml")
-      .timeout(connTimeoutMs = lennyConnectionTimeoutMs, readTimeoutMs = lennyReadTimeoutMs)
-      .asBytes
-    if (response.code == 200) Success(())
-    else Failure(new RuntimeException(s"Unable to add ticket, response code = ${response.code}"))
+    Try {
+      Http(lenny.toASCIIString)
+        .postData(fsXml.toString)
+        .method("POST")
+        .header("Content-Type", "text/xml")
+        .timeout(connTimeoutMs = lennyConnectionTimeoutMs, readTimeoutMs = lennyReadTimeoutMs)
+        .asBytes
+    }.map { response =>
+      if (response.code != 200) throw new RuntimeException(s"Unable to add ticket, response code = ${ response.code }")
+    }
   }
 
   def deleteTicket(ticket: String): Try[Unit] = {
@@ -60,9 +62,7 @@ trait Ticket {
     response.code match {
       case 200 => Success(())
       case 404 => Failure(new RuntimeException(s"Could not find ticket $ticket"))
-      case _ => Failure(new RuntimeException(s"Unable to remove ticket, response code = ${response.code}"))
+      case _ => Failure(new RuntimeException(s"Unable to remove ticket, response code = ${ response.code }"))
     }
   }
-
-
 }
