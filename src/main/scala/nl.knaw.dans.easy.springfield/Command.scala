@@ -118,7 +118,9 @@ object Command extends App
     case Some(cmd @ opts.createTicket) =>
       for {
         _ <- checkPathIsRelative(cmd.path())
-        _ <- createTicket(getCompletePath(cmd.path()), cmd.ticket.toOption.getOrElse(UUID.randomUUID.toString), cmd.expiresAfterSeconds())
+        completePath = getCompletePath(cmd.path())
+        ticket = cmd.ticket.toOption.getOrElse(UUID.randomUUID.toString)
+        _ <- createTicket(completePath, ticket, cmd.expiresAfterSeconds())
       } yield "Ticket created"
     case Some(cmd @ opts.deleteTicket) =>
       deleteTicket(cmd.ticket()).map(_ => "Ticket deleted.")
