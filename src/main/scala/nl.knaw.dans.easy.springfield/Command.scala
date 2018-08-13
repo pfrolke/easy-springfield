@@ -99,8 +99,8 @@ object Command extends App
       maybeList.map {
         list =>
           "\n" +
-            (TABS format("USER", "VIDEO", "PRIVATE", "STATUS")) +
-            (TABS format("=" * "USER".length, "=" * "VIDEO".length, "=" * "PRIVATE".length, "=" * "STATUS".length)) +
+            (TABS format("USER", "A/V FILE", "PRIVATE", "STATUS")) +
+            (TABS format("=" * "USER".length, "=" * "A/V FILE".length, "=" * "PRIVATE".length, "=" * "STATUS".length)) +
             list
       }
     case Some(cmd @ opts.setRequireTicket) =>
@@ -161,12 +161,14 @@ object Command extends App
     } yield users
   }
 
-  private def getStatusSummaries(domain: String, user: String): Try[Seq[VideoStatusSummary]] = {
+  private def getStatusSummaries(domain: String, user: String): Try[Seq[AvStatusSummary]] = {
     for {
-      xml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "video"))
-      summaries <- Try { getStatus(user, xml) }
-      _ = debug(s"Retrieved status summaries: $summaries")
-    } yield summaries
+      videosXml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "video"))
+      videosSummary <- Try { getStatus(user, "video", videosXml) }
+      audiosXml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "audio"))
+      audiosSummary <- Try { getStatus(user, "audio", audiosXml) }
+      _ = debug(s"Retrieved status summaries, video: $videosSummary, audio $audiosSummary")
+    } yield videosSummary ++ audiosSummary
   }
 
   private def approveAction(list: Seq[Path], msg: String): Try[Seq[Path]] = {
