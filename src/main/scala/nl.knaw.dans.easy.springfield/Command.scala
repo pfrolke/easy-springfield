@@ -121,6 +121,7 @@ object Command extends App
         completePath = getCompletePath(cmd.path())
         ticket = cmd.ticket.toOption.getOrElse(UUID.randomUUID.toString)
         _ <- createTicket(completePath, ticket, cmd.expiresAfterSeconds())
+        _ = println(ticket)
       } yield "Ticket created"
     case Some(cmd @ opts.deleteTicket) =>
       deleteTicket(cmd.ticket()).map(_ => "Ticket deleted.")
