@@ -25,7 +25,6 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   editBuilder(_.setHelpWidth(110))
 
   printedName = "easy-springfield"
-  //private val _________ = " " * printedName.length
   private val SUBCOMMAND_SEPARATOR = "---\n"
   val description: String = s"""Tools for managing a Springfield WebTV server."""
   val synopsis: String =
