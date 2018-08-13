@@ -31,6 +31,7 @@ object Command extends App
   with EasySpringfieldApp
   with Smithers2
   with ListUsers
+  with ListCollections
   with GetStatus
   with CreateSpringfieldActions
   with Ticket {
@@ -47,6 +48,8 @@ object Command extends App
     case Some(cmd @ opts.listUsers) =>
       debug("Calling list-users")
       getUserList(cmd.domain()).map(_.mkString(", "))
+    case Some(cmd @ opts.listCollections) =>
+      getCollectionList(cmd.domain(), cmd.user()).map(_.mkString(", "))
     case Some(cmd @ opts.createUser) =>
       createUser(cmd.user(), cmd.targetDomain()).map(_ => s"User created: ${ cmd.user() }")
     case Some(cmd @ opts.createCollection) =>
@@ -159,6 +162,13 @@ object Command extends App
       xml <- getXmlFromPath(Paths.get("domain", domain, "user"))
       users <- Try { listUsers(xml) }
     } yield users
+  }
+
+  private def getCollectionList(domain: String, user: String): Try[Seq[String]] = {
+    for {
+      xml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "collection"))
+      collections <- Try { listCollections(xml) }
+    } yield collections
   }
 
   private def getStatusSummaries(domain: String, user: String): Try[Seq[AvStatusSummary]] = {
