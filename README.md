@@ -7,7 +7,8 @@ Tools for managing a Springfield WebTV server.
 SYNOPSIS
 --------
 
-    easy-springfield list-users <domain>
+    easy-springfield list-users [<domain>]
+    easy-springfield list-collections <username> [<domain>]
     easy-springfield create-user [-d, --target-domain <arg>] <username>
     easy-springfield create-collection [-t, --title <arg>] [-d, --description <arg>] \
         [--target-domain <arg>] <collection> <target-user>
@@ -23,8 +24,7 @@ SYNOPSIS
     easy-springfield delete [-r, --with-referenced-items] <springfield-path>
     easy-springfield add-video-to-presentation <video> <name> <springfield-path>
     easy-springfield add-presentation-to-collection <presentation> <name> <springfield-path>
-    
-    
+
 DESCRIPTION
 -----------
 [Springfield Web TV] is a platform for delivering A/V media files over the web. Managing
@@ -180,6 +180,14 @@ ARGUMENTS
 
      trailing arguments:
       domain (required)   the domain of which to list the users (default = dans)
+    ---
+
+    Subcommand: list-collections - Lists the collections of a user in a given domain
+        -h, --help   Show help message
+
+       trailing arguments:
+        user (required)     the user whose collections to list
+        domain (required)   the domain containing the user (default = dans)
     ---
 
     Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but

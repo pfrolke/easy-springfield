@@ -31,6 +31,7 @@ object Command extends App
   with EasySpringfieldApp
   with Smithers2
   with ListUsers
+  with ListCollections
   with GetStatus
   with CreateSpringfieldActions
   with Ticket {
@@ -47,6 +48,8 @@ object Command extends App
     case Some(cmd @ opts.listUsers) =>
       debug("Calling list-users")
       getUserList(cmd.domain()).map(_.mkString(", "))
+    case Some(cmd @ opts.listCollections) =>
+      getCollectionList(cmd.domain(), cmd.user()).map(_.mkString(", "))
     case Some(cmd @ opts.createUser) =>
       createUser(cmd.user(), cmd.targetDomain()).map(_ => s"User created: ${ cmd.user() }")
     case Some(cmd @ opts.createCollection) =>
@@ -99,8 +102,8 @@ object Command extends App
       maybeList.map {
         list =>
           "\n" +
-            (TABS format("USER", "VIDEO", "PRIVATE", "STATUS")) +
-            (TABS format("=" * "USER".length, "=" * "VIDEO".length, "=" * "PRIVATE".length, "=" * "STATUS".length)) +
+            (TABS format("USER", "A/V FILE", "PRIVATE", "STATUS")) +
+            (TABS format("=" * "USER".length, "=" * "A/V FILE".length, "=" * "PRIVATE".length, "=" * "STATUS".length)) +
             list
       }
     case Some(cmd @ opts.setRequireTicket) =>
@@ -161,12 +164,21 @@ object Command extends App
     } yield users
   }
 
-  private def getStatusSummaries(domain: String, user: String): Try[Seq[VideoStatusSummary]] = {
+  private def getCollectionList(domain: String, user: String): Try[Seq[String]] = {
     for {
-      xml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "video"))
-      summaries <- Try { getStatus(user, xml) }
-      _ = debug(s"Retrieved status summaries: $summaries")
-    } yield summaries
+      xml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "collection"))
+      collections <- Try { listCollections(xml) }
+    } yield collections
+  }
+
+  private def getStatusSummaries(domain: String, user: String): Try[Seq[AvStatusSummary]] = {
+    for {
+      videosXml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "video"))
+      videosSummary <- Try { getStatus(user, "video", videosXml) }
+      audiosXml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "audio"))
+      audiosSummary <- Try { getStatus(user, "audio", audiosXml) }
+      _ = debug(s"Retrieved status summaries, video: $videosSummary, audio $audiosSummary")
+    } yield videosSummary ++ audiosSummary
   }
 
   private def approveAction(list: Seq[Path], msg: String): Try[Seq[Path]] = {

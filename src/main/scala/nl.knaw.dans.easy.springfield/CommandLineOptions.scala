@@ -25,12 +25,12 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   editBuilder(_.setHelpWidth(110))
 
   printedName = "easy-springfield"
-  private val _________ = " " * printedName.length
   private val SUBCOMMAND_SEPARATOR = "---\n"
   val description: String = s"""Tools for managing a Springfield WebTV server."""
   val synopsis: String =
     s"""
-       |$printedName list-users <domain>
+       |$printedName list-users [<domain>]
+       |$printedName list-collections <username> [<domain>]
        |$printedName create-user [-d, --target-domain <arg>] <username>
        |$printedName create-collection [-t, --title <arg>] [-d, --description <arg>] \\
        |    [--target-domain <arg>] <collection> <target-user>
@@ -77,6 +77,18 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(listUsers)
+
+  val listCollections = new Subcommand("list-collections") {
+    descr("Lists the collections of a user in a given domain")
+    val user: ScallopOption[String] = trailArg(name = "user",
+      descr = "the user whose collections to list",
+      required = true)
+    val domain: ScallopOption[String] = trailArg(name = "domain",
+      descr = "the domain containing the user", required = false,
+      default = Some(properties.getString("springfield.default-domain")))
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(listCollections)
 
   val createUser = new Subcommand("create-user") {
     descr(

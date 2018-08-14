@@ -35,8 +35,8 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
         </rawvideo>
       </video>
     </fsxml>
-    val result = getStatus(forUser, parent)
-    result should contain(VideoStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
+    val result = getStatus(forUser, "video", parent)
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
   }
 
   it should "return status 'waiting' if no status element is found" in {
@@ -56,8 +56,8 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
         </rawvideo>
       </video>
     </fsxml>
-    val result = getStatus(forUser, parent)
-    result should contain(VideoStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
+    val result = getStatus(forUser, "video", parent)
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
   }
 
   it should "return requireTicket = false only if explicitly stated" in {
@@ -80,7 +80,7 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
         </rawvideo>
       </video>
     </fsxml>
-    val result = getStatus(forUser, parent)
-    result should contain(VideoStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = false))
+    val result = getStatus(forUser, "video", parent)
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = false))
   }
 }

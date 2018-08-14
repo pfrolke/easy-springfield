@@ -17,23 +17,12 @@ package nl.knaw.dans.easy.springfield
 
 import scala.xml.Elem
 
-case class AvStatusSummary(user: String, filename: String, status: String, requireTicket: Boolean)
+trait ListCollections {
 
-trait GetStatus {
-
-  def getStatus(forUser: String, avType: String, parent: Elem): Seq[AvStatusSummary] = {
+  def listCollections(parent: Elem): Seq[String] = {
     for {
-      video <- parent \ avType
-      requireTicket = video \ "properties" \ "private"
-      raw2 <- video \ s"raw${avType}"
-      if raw2 \@ "id" == "2"
-      filename <- raw2 \ "properties" \ "filename"
-      status = raw2 \ "properties" \ "status"
-    } yield
-      AvStatusSummary(
-        forUser,
-        filename.text, if (status.isEmpty) "waiting"
-                       else status.head.text,
-        requireTicket = requireTicket.isEmpty || requireTicket.head.text.toBoolean)
+      user <- parent \ "collection"
+      if user.attribute("id").isDefined
+    } yield user.attribute("id").get.head.text
   }
 }
