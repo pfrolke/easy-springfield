@@ -176,130 +176,130 @@ ARGUMENTS
       -v, --version   Show version of this program
 
     Subcommand: list-users - Lists users in a given domain
-      -h, --help   Show help message
-
-     trailing arguments:
-      domain (required)   the domain of which to list the users (default = dans)
-    ---
-
-    Subcommand: list-collections - Lists the collections of a user in a given domain
         -h, --help   Show help message
 
        trailing arguments:
-        user (required)     the user whose collections to list
-        domain (required)   the domain containing the user (default = dans)
-    ---
+        domain (required)   the domain of which to list the users (default = dans)
+      ---
 
-    Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
-    instead creates the user in Springfield right away.
+      Subcommand: list-collections - Lists the collections of a user in a given domain
+        -h, --help   Show help message
 
-      -d, --target-domain  <arg>   The target domain in which to create the user
-                                   (default = dans)
-      -h, --help                   Show help message
+       trailing arguments:
+        user (required)         the user whose collections to list
+        domain (not required)   the domain containing the user (default = dans)
+      ---
 
-     trailing arguments:
-      user (required)   User name for the new user
-    ---
+      Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
+      instead creates the user in Springfield right away.
 
-    Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
-    instead creates the collection in Springfield right away.
+        -d, --target-domain  <arg>   The target domain in which to create the user
+                                     (default = dans)
+        -h, --help                   Show help message
 
-      -d, --description  <arg>     Description for the new collection (default = )
-          --target-domain  <arg>   The target domain in which to create the
-                                   collection (default = dans)
-      -t, --title  <arg>           Title for the new collection (default = )
-      -h, --help                   Show help message
+       trailing arguments:
+        user (required)   User name for the new user
+      ---
 
-     trailing arguments:
-      collection (required)    Name for the collection
-      target-user (required)   Existing user under which to store the collection
-    ---
+      Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
+      instead creates the collection in Springfield right away.
 
-    Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
+        -d, --description  <arg>     Description for the new collection (default = )
+            --target-domain  <arg>   The target domain in which to create the
+                                     collection (default = dans)
+        -t, --title  <arg>           Title for the new collection (default = )
+        -h, --help                   Show help message
 
-      -d, --description  <arg>     Description for the new presentation (default = )
-      -r, --require-ticket
-          --target-domain  <arg>   The target domain in which to create the
-                                   presentation (default = dans)
-      -t, --title  <arg>           Title for the new presentation (default = )
-      -h, --help                   Show help message
+       trailing arguments:
+        collection (required)    Name for the collection
+        target-user (required)   Existing user under which to store the collection
+      ---
 
-     trailing arguments:
-      target-user (required)   Existing user under which to store the collection
-    ---
+      Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
 
-    Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
-    with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
-    REQUIRE-TICKET.
+        -d, --description  <arg>     Description for the new presentation (default = )
+        -r, --require-ticket
+            --target-domain  <arg>   The target domain in which to create the
+                                     presentation (default = dans)
+        -t, --title  <arg>           Title for the new presentation (default = )
+        -h, --help                   Show help message
 
-      -p, --check-parent-items     Check that parent items (domain, user,
-                                   collection) exist
-      -v, --videos-folder  <arg>   Folder relative to which to resolve the SRC
-                                   column in the CSV
-      -h, --help                   Show help message
+       trailing arguments:
+        target-user (required)   Existing user under which to store the collection
+      ---
 
-     trailing arguments:
-      video-csv (required)   CSV file describing the videos
-    ---
+      Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
+      with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
+      REQUIRE-TICKET.
 
-    Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
-      -d, --domain  <arg>   limit to videos within this domain (default = dans)
-      -u, --user  <arg>     limit to videos owned by this user
-      -h, --help            Show help message
-    ---
+        -p, --check-parent-items     Check that parent items (domain, user,
+                                     collection) exist
+        -v, --videos-folder  <arg>   Folder relative to which to resolve the SRC
+                                     column in the CSV
+        -h, --help                   Show help message
 
-    Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
-      -h, --help   Show help message
+       trailing arguments:
+        video-csv (required)   CSV file describing the videos
+      ---
 
-     trailing arguments:
-      springfield-path (required)   The parent of items to change
-      require-ticket (required)     true|false
-    ---
+      Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
+        -d, --domain  <arg>   limit to videos within this domain (default = dans)
+        -u, --user  <arg>     limit to videos owned by this user
+        -h, --help            Show help message
+      ---
 
-    Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
-    If no ticket is specificied a random one is generated.
-      -e, --expires-after-seconds  <arg>    (default = 300)
-      -t, --ticket  <arg>
-      -h, --help                           Show help message
+      Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
+        -h, --help   Show help message
 
-     trailing arguments:
-      springfield-path (required)   The presentation to create the ticket for
-    ---
+       trailing arguments:
+        springfield-path (required)   The parent of items to change
+        require-ticket (required)     true|false
+      ---
 
-    Subcommand: delete-ticket - Deletes a specified authorization ticket.
-      -h, --help   Show help message
+      Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
+      If no ticket is specificied a random one is generated.
+        -e, --expires-after-seconds  <arg>    (default = 300)
+        -t, --ticket  <arg>
+        -h, --help                           Show help message
 
-     trailing arguments:
-      ticket (required)
-    ---
+       trailing arguments:
+        springfield-path (required)   The presentation to create the ticket for
+      ---
 
-    Subcommand: delete - Deletes the item at the specified Springfield path.
-      -r, --with-referenced-items   also remove items reference from <path>,
-                                    recursively
-      -h, --help                    Show help message
+      Subcommand: delete-ticket - Deletes a specified authorization ticket.
+        -h, --help   Show help message
 
-     trailing arguments:
-      path (required)   the path pointing item to remove
-    ---
+       trailing arguments:
+        ticket (required)
+      ---
 
-    Subcommand: add-video-to-presentation - Adds a video to a presentation under a specified name.
-      -h, --help   Show help message
+      Subcommand: delete - Deletes the item at the specified Springfield path.
+        -r, --with-referenced-items   also remove items reference from <path>,
+                                      recursively
+        -h, --help                    Show help message
 
-     trailing arguments:
-      video (required)          referid of the video
-      name (required)           name to assign to the video in the presentation
-      presentation (required)   the presentation, either a Springfield path or a
-                                referid
-    ---
+       trailing arguments:
+        path (required)   the path pointing item to remove
+      ---
 
-    Subcommand: add-presentation-to-collection - Adds a presentation to a collection under a specified name.
-      -h, --help   Show help message
+      Subcommand: add-video-to-presentation - Adds a video to a presentation under a specified name.
+        -h, --help   Show help message
 
-     trailing arguments:
-      presentation (required)   referid of the presentation
-      name (required)           name to assign to the presentation in the collection
-      collection (required)     the Springfield path of the collection
-    ---
+       trailing arguments:
+        video (required)          referid of the video
+        name (required)           name to assign to the video in the presentation
+        presentation (required)   the presentation, either a Springfield path or a
+                                  referid
+      ---
+
+      Subcommand: add-presentation-to-collection - Adds a presentation to a collection under a specified name.
+        -h, --help   Show help message
+
+       trailing arguments:
+        presentation (required)   referid of the presentation
+        name (required)           name to assign to the presentation in the collection
+        collection (required)     the Springfield path of the collection
+      ---
 
 
 
