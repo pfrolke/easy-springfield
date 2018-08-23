@@ -51,11 +51,11 @@ object Command extends App
     case Some(cmd @ opts.listCollections) =>
       getCollectionList(cmd.domain(), cmd.user()).map(_.mkString(", "))
     case Some(cmd @ opts.createUser) =>
-      createUser(cmd.user(), cmd.targetDomain()).map(_ => s"User created: ${ cmd.user() }")
+      createUser(cmd.user(), cmd.domain()).map(_ => s"User created: ${ cmd.user() }")
     case Some(cmd @ opts.createCollection) =>
-      createCollection(cmd.collection(), cmd.title(), cmd.description(), cmd.user(), cmd.targetDomain()).map(_ => s"Collection created: ${ cmd.collection() }")
+      createCollection(cmd.collection(), cmd.title(), cmd.description(), cmd.user(), cmd.domain()).map(_ => s"Collection created: ${ cmd.collection() }")
     case Some(cmd @ opts.createPresentation) =>
-      createPresentation(cmd.title(), cmd.description(), cmd.requireTicket(), cmd.user(), cmd.targetDomain()).map(referid => s"Presentation created: $referid")
+      createPresentation(cmd.title(), cmd.description(), cmd.requireTicket(), cmd.user(), cmd.domain()).map(referid => s"Presentation created: $referid")
     case Some(cmd @ opts.createSpringfieldActions) =>
       val result = for {
         videos <- parseCsv(cmd.videosCsv())

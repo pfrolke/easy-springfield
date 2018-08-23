@@ -24,7 +24,7 @@ class ListCollectionsSpec extends TestSupportFixture with ListCollections {
       <audio id="audio01" />
     </fsxml>
 
-    listCollections(parent) should be(Seq("coll01", "coll02"))
+    listCollections(parent) shouldBe Seq("coll01", "coll02")
   }
 
   it should "return an empty Seq if there are no collections" in {
@@ -33,7 +33,7 @@ class ListCollectionsSpec extends TestSupportFixture with ListCollections {
       <audio id="audio01" />
     </fsxml>
 
-    listCollections(parent) should be(empty)
+    listCollections(parent) shouldBe empty
   }
 
   it should "ignore properties listed before collections" in {
@@ -49,7 +49,7 @@ class ListCollectionsSpec extends TestSupportFixture with ListCollections {
       <video id="video01" />
       <collection id="coll02"/>
       <audio id="audio01" />    </fsxml>
-    listCollections(parent) should be(Seq("coll01", "coll02"))
+    listCollections(parent) shouldBe Seq("coll01", "coll02")
   }
 
   it should "just return empty Seq if no Springfield xml is passed to it" in {
@@ -57,6 +57,6 @@ class ListCollectionsSpec extends TestSupportFixture with ListCollections {
       <body>This is not springfield</body>
     </html>
 
-    listCollections(parent) should be(empty)
+    listCollections(parent) shouldBe empty
   }
 }
