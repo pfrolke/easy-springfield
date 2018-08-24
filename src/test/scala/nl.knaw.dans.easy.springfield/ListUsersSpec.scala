@@ -29,7 +29,7 @@ class ListUsersSpec extends TestSupportFixture with ListUsers {
     val parent = <fsxml>
     </fsxml>
 
-    listUsers(parent) should be(empty)
+    listUsers(parent) shouldBe empty
   }
 
   it should "ignore properties listed before users" in {
@@ -44,7 +44,7 @@ class ListUsersSpec extends TestSupportFixture with ListUsers {
       <user id="user01"/>
       <user id="user02"/>
     </fsxml>
-    listUsers(parent) should be(Seq("user01", "user02"))
+    listUsers(parent) shouldBe Seq("user01", "user02")
   }
 
   it should "just return empty Seq if no Springfield xml is passed to it" in {
@@ -52,7 +52,7 @@ class ListUsersSpec extends TestSupportFixture with ListUsers {
       <body>This is not springfield</body>
     </html>
 
-    listUsers(parent) should be(empty)
+    listUsers(parent) shouldBe empty
   }
 
 }

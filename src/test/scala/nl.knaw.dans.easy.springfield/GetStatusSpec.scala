@@ -39,6 +39,28 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
     result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
   }
 
+  it should "return a list of Summary instances for audio as well" in {
+    val forUser = "testUser"
+    val expectedFileName = "GV_AVA_horenden_09.mp3"
+    val expectedStatus = "done"
+    val parent = <fsxml>
+      <audio id="11">
+        <rawaudio id="1">
+          <properties>
+          </properties>
+        </rawaudio>
+        <rawaudio id="2">
+          <properties>
+            <filename>{ expectedFileName }</filename>
+            <status>{ expectedStatus }</status>
+          </properties>
+        </rawaudio>
+      </audio>
+    </fsxml>
+    val result = getStatus(forUser, "audio", parent)
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
+  }
+
   it should "return status 'waiting' if no status element is found" in {
     val forUser = "testUser"
     val expectedFileName = "GV_AVA_doven_09.mp4"
