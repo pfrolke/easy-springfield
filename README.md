@@ -8,13 +8,13 @@ SYNOPSIS
 --------
 
     easy-springfield list-users [<domain>]
-    easy-springfield list-collections <username> [<domain>]
-    easy-springfield create-user [-d, --target-domain <arg>] <username>
+    easy-springfield list-collections <user> [<domain>]
+    easy-springfield create-user <user> [<domain>]
     easy-springfield create-collection [-t, --title <arg>] [-d, --description <arg>] \
-        [--target-domain <arg>] <collection> <target-user>
+        <collection> <user> [<domain>]
     easy-springfield create-presentation [-t, --title <arg>] [-d, --description <arg>] \
-        [-r, --require-ticket] [--target-domain <arg>] <target-user>
-    easy-springfield create-springfield-actions [-p, --check-parent-items] [-v, --videos-folder <arg>] \
+        [-r, --require-ticket] <user> [<domain>]
+    easy-springfield create-springfield-actions [-c, --check-parent-items] [-v, --videos-folder <arg>] \
         <videos-csv> > springfield-actions.xml
     easy-springfield status [-u, --user <arg>][-d, --domain <arg>]
     easy-springfield set-require-ticket <springfield-path> {true|false}
@@ -94,8 +94,8 @@ their functionality.
 As discussed before, the videos are stored as leaves of a tree structure. The parent elements
 of that structure can, in part, be examined and managed by `easy-springfield`. 
 
-Currently it is only possible to list the users (in a given domain). To get a list of the items
-in a collection or a presentation, retrieve the raw Springfield metadata as explained in the previous
+Currently it is only possible to list the users (in a given domain) and collections (of a given user).
+To get a list of the items in a presentation, retrieve the raw Springfield metadata as explained in the previous
 section.
 
 Users and collections can be created with the subcommands `create-user` and `create-collection`. In
@@ -147,7 +147,8 @@ To debug any problems, it is best to examine `uter`'s  log file at `/var/log/tom
  
 ### Status report
 Processing the videos in the inbox takes a while. The `status` command generates a report that 
-lists the A/V items and their current status (`DONE`, `WAITING` or `FAILED`).
+lists the A/V items and their current status (`DONE`, `WAITING` or `FAILED`). Note that items that have not (yet)
+been successfully processed by Springfield's inbox service Uter will not appear in the status report at all.
 
 ### Changing require-ticket
 You can change videos from public to private and vice versa with the `set-require-ticket` subcommand. This command
@@ -157,8 +158,11 @@ actual changes you are requested to confirm.
 ### Creating and deleting tickets
 For debugging purposes it is sometimes convenient to manually create authorization tickets for presentations. 
 The `create-ticket` and `delete-ticket` enable you to do exactly that. You can optionally provided the ticket yourself and 
-specify the number of seconds it must be valid. Viewing the list of current tickets is *not* supported. However,
-The Springfield Lenny service provides an HTML-based list for this at `http://yourstreamingserver:8080/lenny/acl/ticket`
+specify the number of seconds it must be valid. However, it is better to let easy-springfield generated the ticket for you,
+as it will use a UUID, which tends to be more secure than any ticket number that you will think of yourself.
+
+Viewing the list of current tickets is *not* supported. However, the Springfield Lenny service provides an HTML-based list
+for this at `http://yourstreamingserver:8080/lenny/acl/ticket`.
 
 ### Deleting items
 You can delete videos, presentations and collections with the `delete` subcommand. Users cannot currently be 
@@ -166,6 +170,9 @@ deleted, even if they contain no resources anymore. This seems a bug in Springfi
 result in an increasing number of unused "user" resources. The `-r` option lets you include all the referenced resources
 in a delete action. This way you can delete a whole collection without first having to manually delete all the 
 resources referenced by it. Again, the user is asked to confirm such a delete action.
+
+Please, note that the data on disk will *not* be cleaned up by Springfield. If you are using this command a lot you will be
+faced with an increasing amount of wasted disk space.
 
 [Springfield Web TV]: http://www.noterik.nl/products/webtv_framework/ 
 
@@ -176,135 +183,161 @@ ARGUMENTS
       -v, --version   Show version of this program
 
     Subcommand: list-users - Lists users in a given domain
-        -h, --help   Show help message
+      -h, --help   Show help message
 
-       trailing arguments:
-        domain (required)   the domain of which to list the users (default = dans)
-      ---
+     trailing arguments:
+      domain (not required)   the domain of which to list the users (default = dans)
+    ---
 
-      Subcommand: list-collections - Lists the collections of a user in a given domain
-        -h, --help   Show help message
+    Subcommand: list-collections - Lists the collections of a user in a given domain
+      -h, --help   Show help message
 
-       trailing arguments:
-        user (required)         the user whose collections to list
-        domain (not required)   the domain containing the user (default = dans)
-      ---
+     trailing arguments:
+      user (required)         the user whose collections to list
+      domain (not required)   the domain containing the user (default = dans)
+    ---
 
-      Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
-      instead creates the user in Springfield right away.
+    Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
+    instead creates the user in Springfield right away.
 
-        -d, --target-domain  <arg>   The target domain in which to create the user
-                                     (default = dans)
-        -h, --help                   Show help message
+      -h, --help   Show help message
 
-       trailing arguments:
-        user (required)   User name for the new user
-      ---
+     trailing arguments:
+      user (required)         user name for the new user
+      domain (not required)   the target domain in which to create the user
+                              (default = dans)
+    ---
 
-      Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
-      instead creates the collection in Springfield right away.
+    Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
+    instead creates the collection in Springfield right away.
 
-        -d, --description  <arg>     Description for the new collection (default = )
-            --target-domain  <arg>   The target domain in which to create the
-                                     collection (default = dans)
-        -t, --title  <arg>           Title for the new collection (default = )
-        -h, --help                   Show help message
+      -d, --description  <arg>   Description for the new collection (default = )
+      -t, --title  <arg>         Title for the new collection (default = )
+      -h, --help                 Show help message
 
-       trailing arguments:
-        collection (required)    Name for the collection
-        target-user (required)   Existing user under which to store the collection
-      ---
+     trailing arguments:
+      collection (required)   name for the collection
+      user (required)         existing user under which to store the collection
+      domain (not required)   the target domain in which to create the collection
+                              (default = dans)
+    ---
 
-      Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
+    Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
 
-        -d, --description  <arg>     Description for the new presentation (default = )
-        -r, --require-ticket
-            --target-domain  <arg>   The target domain in which to create the
-                                     presentation (default = dans)
-        -t, --title  <arg>           Title for the new presentation (default = )
-        -h, --help                   Show help message
+      -d, --description  <arg>   description for the new presentation (default = )
+      -r, --require-ticket       whether to require a ticket before playing the
+                                 presentation (private audio/video) or not (public
+                                 audio/video)
+      -t, --title  <arg>         title for the new presentation (default = )
+      -h, --help                 Show help message
 
-       trailing arguments:
-        target-user (required)   Existing user under which to store the collection
-      ---
+     trailing arguments:
+      user (required)         existing user under which to store the collection
+      domain (not required)   the target domain in which to create the presentation
+                              (default = dans)
+    ---
 
-      Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
-      with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
-      REQUIRE-TICKET.
+    Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
+    with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
+    REQUIRE-TICKET.
 
-        -p, --check-parent-items     Check that parent items (domain, user,
-                                     collection) exist
-        -v, --videos-folder  <arg>   Folder relative to which to resolve the SRC
-                                     column in the CSV
-        -h, --help                   Show help message
+      -c, --check-parent-items     check that parent items (domain, user,
+                                   collection) exist
+      -v, --videos-folder  <arg>   folder relative to which to resolve the SRC
+                                   column in the CSV
+      -h, --help                   Show help message
 
-       trailing arguments:
-        video-csv (required)   CSV file describing the videos
-      ---
+     trailing arguments:
+      video-csv (required)   CSV file describing the videos
+    ---
 
-      Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
-        -d, --domain  <arg>   limit to videos within this domain (default = dans)
-        -u, --user  <arg>     limit to videos owned by this user
-        -h, --help            Show help message
-      ---
+    Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
+      -d, --domain  <arg>   limit to videos within this domain (default = dans)
+      -u, --user  <arg>     limit to videos owned by this user
+      -h, --help            Show help message
+    ---
 
-      Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
-        -h, --help   Show help message
+    Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
+      -h, --help   Show help message
 
-       trailing arguments:
-        springfield-path (required)   The parent of items to change
-        require-ticket (required)     true|false
-      ---
+     trailing arguments:
+      springfield-path (required)   the parent of items to change
+      require-ticket (required)     true or false: whether to require a ticket
+                                    before playing the presentation (private
+                                    audio/video) or not (public audio/video)
+    ---
 
-      Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
-      If no ticket is specificied a random one is generated.
-        -e, --expires-after-seconds  <arg>    (default = 300)
-        -t, --ticket  <arg>
-        -h, --help                           Show help message
+    Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
+    If no ticket is specificied a random one is generated.
+      -e, --expires-after-seconds  <arg>    (default = 300)
+      -t, --ticket  <arg>                  the ticket to assign
+      -h, --help                           Show help message
 
-       trailing arguments:
-        springfield-path (required)   The presentation to create the ticket for
-      ---
+     trailing arguments:
+      springfield-path (required)   the presentation to create the ticket for
+    ---
 
-      Subcommand: delete-ticket - Deletes a specified authorization ticket.
-        -h, --help   Show help message
+    Subcommand: delete-ticket - Deletes a specified authorization ticket.
+      -h, --help   Show help message
 
-       trailing arguments:
-        ticket (required)
-      ---
+     trailing arguments:
+      ticket (required)   the ticket to delete
+    ---
 
-      Subcommand: delete - Deletes the item at the specified Springfield path.
-        -r, --with-referenced-items   also remove items reference from <path>,
-                                      recursively
-        -h, --help                    Show help message
+    Subcommand: delete - Deletes the item at the specified Springfield path.
+      -r, --with-referenced-items   also remove items reference from <path>,
+                                    recursively
+      -h, --help                    Show help message
 
-       trailing arguments:
-        path (required)   the path pointing item to remove
-      ---
+     trailing arguments:
+      path (required)   the path pointing item to remove
+    ---
 
-      Subcommand: add-video-to-presentation - Adds a video to a presentation under a specified name.
-        -h, --help   Show help message
+    Subcommand: add-video-to-presentation - Adds a video to a presentation under a specified name.
+      -h, --help   Show help message
 
-       trailing arguments:
-        video (required)          referid of the video
-        name (required)           name to assign to the video in the presentation
-        presentation (required)   the presentation, either a Springfield path or a
-                                  referid
-      ---
+     trailing arguments:
+      video (required)          referid of the video
+      name (required)           name to assign to the video in the presentation
+      presentation (required)   the presentation, either a Springfield path or a
+                                referid
+    ---
 
-      Subcommand: add-presentation-to-collection - Adds a presentation to a collection under a specified name.
-        -h, --help   Show help message
+    Subcommand: add-presentation-to-collection - Adds a presentation to a collection under a specified name.
+      -h, --help   Show help message
 
-       trailing arguments:
-        presentation (required)   referid of the presentation
-        name (required)           name to assign to the presentation in the collection
-        collection (required)     the Springfield path of the collection
-      ---
-
-
-
+     trailing arguments:
+      presentation (required)   referid of the presentation
+      name (required)           name to assign to the presentation in the collection
+      collection (required)     the Springfield path of the collection
+    ---
 
 INSTALLATION AND CONFIGURATION
 ------------------------------
+The preferred way of install this module is using the RPM package. This will install the binaries to
+`/opt/dans.knaw.nl/easy-springfield`, the configuration files to `/etc/opt/dans.knaw.nl/easy-springfield`,
+and will install the service script for `initd` or `systemd`. It will also set up a default bag store
+at `/srv/dans.kanw.nl/bag-store`.
 
+If you are on a system that does not support RPM, you can use the tarball. You will need to copy the
+service scripts to the appropiate locations yourself.
+
+BUILDING FROM SOURCE
+--------------------
+
+Prerequisites:
+
+* Java 8 or higher
+* Maven 3.3.3 or higher
+* RPM (if you want to build the RPM package).
+
+Steps:
+
+    git clone https://github.com/DANS-KNAW/easy-springfield.git
+    cd easy-springfield
+    mvn install
+
+If the `rpm` executable is found at `/usr/local/bin/rpm`, the build profile that includes the RPM
+packaging will be activated. If `rpm` is available, but at a different path, then activate it by using
+Maven's `-P` switch: `mvn -Pprm install`.
 
