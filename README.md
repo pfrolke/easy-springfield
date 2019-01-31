@@ -11,19 +11,23 @@ SYNOPSIS
     easy-springfield list-collections <user> [<domain>]
     easy-springfield create-user <user> [<domain>]
     easy-springfield create-collection [-t, --title <arg>] [-d, --description <arg>] \
-        <collection> <user> [<domain>]
+      <collection> <user> [<domain>]
     easy-springfield create-presentation [-t, --title <arg>] [-d, --description <arg>] \
-        [-r, --require-ticket] <user> [<domain>]
+      [-r, --require-ticket] <user> [<domain>]
     easy-springfield create-springfield-actions [-c, --check-parent-items] [-v, --videos-folder <arg>] \
-        <videos-csv> > springfield-actions.xml
+      <videos-csv> > springfield-actions.xml
     easy-springfield status [-u, --user <arg>][-d, --domain <arg>]
     easy-springfield set-require-ticket <springfield-path> {true|false}
     easy-springfield create-ticket [-e,--expires-after-seconds <arg>] [-t, --ticket <arg>] \
-        <springfield-path>
+      <springfield-path>
     easy-springfield delete-ticket <ticket>
     easy-springfield delete [-r, --with-referenced-items] <springfield-path>
-    easy-springfield add-video-to-presentation <video> <name> <springfield-path>
-    easy-springfield add-presentation-to-collection <presentation> <name> <springfield-path>
+    easy-springfield add-videoref-to-presentation <video> <name> <presentation>
+    easy-springfield add-presentationref-to-collection <presentation> <name> <collection>
+    easy-springfield add-subtitles-to-video --language <code> <video> <web-vtt-file>
+    easy-springfield add-subtitles-to-presentation --language <code> <presentation> <web-vtt-file>...
+
+Note:  `add-subtitles-to-video` and `add-subtitles-to-presentation` are still to be implememented.
 
 DESCRIPTION
 -----------
@@ -64,6 +68,11 @@ paths. If you configure the default domain to `dans` the above examples then bec
     user/history/video/1
 
 Everywhere else where a domain must be specified, it will then also default to the value you configured.
+
+#### Referids
+In some cases springfield paths are used to include an item by reference into another item. For example a
+collection is built up using springfield-paths to presentations. These springfield-paths are then called
+`referid`s. 
 
 ### Examining raw Springfield metadata 
 Although `easy-springfield` lets you manage a considerable part of the Springfield repository without your
@@ -174,143 +183,180 @@ resources referenced by it. Again, the user is asked to confirm such a delete ac
 Please, note that the data on disk will *not* be cleaned up by Springfield. If you are using this command a lot you will be
 faced with an increasing amount of wasted disk space.
 
-[Springfield Web TV]: http://www.noterik.nl/products/webtv_framework/ 
+### Fixing the Springfield hierarchy
+To fix problems in the Springfield hierarchy the following subcommands can be used.
+
+* `add-video-to-presentation` - this adds a video that is already in Springfield to a presentation.
+* `add-presentation-to-collection` - this adds a presentation that is already in Springfield to a collection.
+
+Together with the `delete` subcommand, used without the `-r` option, it is possible to repair the Springfield hierarchy, if it
+becomes corrupted.
+
+### Adding subtitles to existing videos
+For videos that have been ingested without subtitles, you can still add those later. You will need to execute this command
+as the `tomcat` user, so that it can write the subtitles files to the  `/data/dansstreaming` directory tree.
+
+* `add-subtitles-to-video` - this adds a subtitles file to an existing video.
+* `add-subtitles-to-presentation` - this adds subtitles files to the videos in an existing presentation.
+
+[Springfield Web TV]: http://www.noterik.nl/products/webtv_framework/
 
 ARGUMENTS
 ---------
 
-      -h, --help      Show help message
-      -v, --version   Show version of this program
+        -h, --help      Show help message
+          -v, --version   Show version of this program
 
-    Subcommand: list-users - Lists users in a given domain
-      -h, --help   Show help message
+        Subcommand: list-users - Lists users in a given domain
+          -h, --help   Show help message
 
-     trailing arguments:
-      domain (not required)   the domain of which to list the users (default = dans)
-    ---
+         trailing arguments:
+          domain (not required)   the domain of which to list the users (default = dans)
+        ---
 
-    Subcommand: list-collections - Lists the collections of a user in a given domain
-      -h, --help   Show help message
+        Subcommand: list-collections - Lists the collections of a user in a given domain
+          -h, --help   Show help message
 
-     trailing arguments:
-      user (required)         the user whose collections to list
-      domain (not required)   the domain containing the user (default = dans)
-    ---
+         trailing arguments:
+          user (required)         the user whose collections to list
+          domain (not required)   the domain containing the user (default = dans)
+        ---
 
-    Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
-    instead creates the user in Springfield right away.
+        Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
+        instead creates the user in Springfield right away.
 
-      -h, --help   Show help message
+          -h, --help   Show help message
 
-     trailing arguments:
-      user (required)         user name for the new user
-      domain (not required)   the target domain in which to create the user
-                              (default = dans)
-    ---
+         trailing arguments:
+          user (required)         user name for the new user
+          domain (not required)   the target domain in which to create the user
+                                  (default = dans)
+        ---
 
-    Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
-    instead creates the collection in Springfield right away.
+        Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
+        instead creates the collection in Springfield right away.
 
-      -d, --description  <arg>   Description for the new collection (default = )
-      -t, --title  <arg>         Title for the new collection (default = )
-      -h, --help                 Show help message
+          -d, --description  <arg>   Description for the new collection (default = )
+          -t, --title  <arg>         Title for the new collection (default = )
+          -h, --help                 Show help message
 
-     trailing arguments:
-      collection (required)   name for the collection
-      user (required)         existing user under which to store the collection
-      domain (not required)   the target domain in which to create the collection
-                              (default = dans)
-    ---
+         trailing arguments:
+          collection (required)   name for the collection
+          user (required)         existing user under which to store the collection
+          domain (not required)   the target domain in which to create the collection
+                                  (default = dans)
+        ---
 
-    Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
+        Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
 
-      -d, --description  <arg>   description for the new presentation (default = )
-      -r, --require-ticket       whether to require a ticket before playing the
-                                 presentation (private audio/video) or not (public
-                                 audio/video)
-      -t, --title  <arg>         title for the new presentation (default = )
-      -h, --help                 Show help message
+          -d, --description  <arg>   description for the new presentation (default = )
+          -r, --require-ticket       whether to require a ticket before playing the
+                                     presentation (private audio/video) or not (public
+                                     audio/video)
+          -t, --title  <arg>         title for the new presentation (default = )
+          -h, --help                 Show help message
 
-     trailing arguments:
-      user (required)         existing user under which to store the collection
-      domain (not required)   the target domain in which to create the presentation
-                              (default = dans)
-    ---
+         trailing arguments:
+          user (required)         existing user under which to store the collection
+          domain (not required)   the target domain in which to create the presentation
+                                  (default = dans)
+        ---
 
-    Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
-    with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
-    REQUIRE-TICKET.
+        Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
+        with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
+        REQUIRE-TICKET.
 
-      -c, --check-parent-items     check that parent items (domain, user,
-                                   collection) exist
-      -v, --videos-folder  <arg>   folder relative to which to resolve the SRC
-                                   column in the CSV
-      -h, --help                   Show help message
+          -c, --check-parent-items     check that parent items (domain, user,
+                                       collection) exist
+          -v, --videos-folder  <arg>   folder relative to which to resolve the SRC
+                                       column in the CSV
+          -h, --help                   Show help message
 
-     trailing arguments:
-      video-csv (required)   CSV file describing the videos
-    ---
+         trailing arguments:
+          video-csv (required)   CSV file describing the videos
+        ---
 
-    Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
-      -d, --domain  <arg>   limit to videos within this domain (default = dans)
-      -u, --user  <arg>     limit to videos owned by this user
-      -h, --help            Show help message
-    ---
+        Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
+          -d, --domain  <arg>   limit to videos within this domain (default = dans)
+          -u, --user  <arg>     limit to videos owned by this user
+          -h, --help            Show help message
+        ---
 
-    Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
-      -h, --help   Show help message
+        Subcommand: set-require-ticket - Sets or clears the 'require-ticket' flag for the specified presentation.
+          -h, --help   Show help message
 
-     trailing arguments:
-      springfield-path (required)   the parent of items to change
-      require-ticket (required)     true or false: whether to require a ticket
-                                    before playing the presentation (private
-                                    audio/video) or not (public audio/video)
-    ---
+         trailing arguments:
+          springfield-path (required)   the parent of items to change
+          require-ticket (required)     true or false: whether to require a ticket
+                                        before playing the presentation (private
+                                        audio/video) or not (public audio/video)
+        ---
 
-    Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
-    If no ticket is specificied a random one is generated.
-      -e, --expires-after-seconds  <arg>    (default = 300)
-      -t, --ticket  <arg>                  the ticket to assign
-      -h, --help                           Show help message
+        Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
+        If no ticket is specificied a random one is generated.
+          -e, --expires-after-seconds  <arg>    (default = 300)
+          -t, --ticket  <arg>                  the ticket to assign
+          -h, --help                           Show help message
 
-     trailing arguments:
-      springfield-path (required)   the presentation to create the ticket for
-    ---
+         trailing arguments:
+          springfield-path (required)   the presentation to create the ticket for
+        ---
 
-    Subcommand: delete-ticket - Deletes a specified authorization ticket.
-      -h, --help   Show help message
+        Subcommand: delete-ticket - Deletes a specified authorization ticket.
+          -h, --help   Show help message
 
-     trailing arguments:
-      ticket (required)   the ticket to delete
-    ---
+         trailing arguments:
+          ticket (required)   the ticket to delete
+        ---
 
-    Subcommand: delete - Deletes the item at the specified Springfield path.
-      -r, --with-referenced-items   also remove items reference from <path>,
-                                    recursively
-      -h, --help                    Show help message
+        Subcommand: delete - Deletes the item at the specified Springfield path.
+          -r, --with-referenced-items   also remove items reference from <path>,
+                                        recursively
+          -h, --help                    Show help message
 
-     trailing arguments:
-      path (required)   the path pointing item to remove
-    ---
+         trailing arguments:
+          path (required)   the path pointing item to remove
+        ---
 
-    Subcommand: add-video-to-presentation - Adds a video to a presentation under a specified name.
-      -h, --help   Show help message
+        Subcommand: add-videoref-to-presentation - Adds a videoref to a presentation under a specified name. The video must already exist in Springfield.
+          -h, --help   Show help message
 
-     trailing arguments:
-      video (required)          referid of the video
-      name (required)           name to assign to the video in the presentation
-      presentation (required)   the presentation, either a Springfield path or a
-                                referid
-    ---
+         trailing arguments:
+          video (required)          referid of the video
+          name (required)           name to assign to the video in the presentation
+          presentation (required)   the presentation, either a Springfield path or a
+                                    referid
+        ---
 
-    Subcommand: add-presentation-to-collection - Adds a presentation to a collection under a specified name.
-      -h, --help   Show help message
+        Subcommand: add-presentationref-to-collection - Adds a presentation to a collection under a specified name. The presentation must already exist in Springfield
+          -h, --help   Show help message
 
-     trailing arguments:
-      presentation (required)   referid of the presentation
-      name (required)           name to assign to the presentation in the collection
-      collection (required)     the Springfield path of the collection
-    ---
+         trailing arguments:
+          presentation (required)   referid of the presentation
+          name (required)           name to assign to the presentation in the collection
+          collection (required)     the Springfield path of the collection
+        ---
+
+        Subcommand: add-subtitles-to-video - Adds a subtitles file to an existing video.
+          -l, --language  <arg>   the ISO 639-1 (two letter) language code
+          -h, --help              Show help message
+
+         trailing arguments:
+          video (required)         the referid of the video
+          webvtt-file (required)   path to the WebVTT subtitles file to add
+        ---
+
+        Subcommand: add-subtitles-to-presentation -
+         Adds one or more subtitles file(s) to an existing presentation. If the presentation contains multiple videos
+         the same number of WebVTT files must be specified; they will be added in the specified order to the respective videos.
+
+          -l, --language  <arg>   the ISO 639-1 (two letter) language code
+          -h, --help              Show help message
+
+         trailing arguments:
+          presentation (required)     referid of the presentation
+          webvtt-file(s) (required)   path to the WebVTT subtitles file(s) to add
+        ---
 
 INSTALLATION AND CONFIGURATION
 ------------------------------

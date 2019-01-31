@@ -136,12 +136,12 @@ object Command extends App
         _ <- approveAction(list, """These items will be deleted.""")
         _ <- list.map(deletePath).collectResults
       } yield "Items deleted"
-    case Some(cmd @ opts.addVideoToPresentation) =>
+    case Some(cmd @ opts.`addVideoRefToPresentation`) =>
       for {
         _ <- checkPathIsRelative(cmd.video())
         _ <- addVideoRefToPresentation(getCompletePath(cmd.video()), cmd.name(), cmd.presentation())
       } yield "Video reference added."
-    case Some(cmd @ opts.addPresentationToCollection) =>
+    case Some(cmd @ opts.`addPresentationRefToCollection`) =>
       for {
         _ <- checkPathIsRelative(cmd.presentation())
         _ <- addPresentationRefToCollection(getCompletePath(cmd.presentation()), cmd.name(), cmd.collection())

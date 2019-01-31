@@ -45,8 +45,10 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
        |    <springfield-path>
        |$printedName delete-ticket <ticket>
        |$printedName delete [-r, --with-referenced-items] <springfield-path>
-       |$printedName add-video-to-presentation <video> <name> <springfield-path>
-       |$printedName add-presentation-to-collection <presentation> <name> <springfield-path>
+       |$printedName add-videoref-to-presentation <video> <name> <presentation>
+       |$printedName add-presentationref-to-collection <presentation> <name> <collection>
+       |$printedName add-subtitles-to-video --language <code> <video> <web-vtt-file>
+       |$printedName add-subtitles-to-presentation --language <code> <presentation> <web-vtt-file>...
      """.stripMargin
 
   version(s"$printedName v$version")
@@ -234,8 +236,8 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
   }
   addSubcommand(delete)
 
-  val addVideoToPresentation = new Subcommand("add-video-to-presentation") {
-    descr("Adds a video to a presentation under a specified name.")
+  val addVideoRefToPresentation = new Subcommand("add-videoref-to-presentation") {
+    descr("Adds a videoref to a presentation under a specified name. The video must already exist in Springfield.")
     val video: ScallopOption[Path] = trailArg(name = "video",
       descr = "referid of the video",
       required = true)
@@ -247,10 +249,10 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
       required = true)
     footer(SUBCOMMAND_SEPARATOR)
   }
-  addSubcommand(addVideoToPresentation)
+  addSubcommand(addVideoRefToPresentation)
 
-  val addPresentationToCollection = new Subcommand("add-presentation-to-collection") {
-    descr("Adds a presentation to a collection under a specified name.")
+  val addPresentationRefToCollection = new Subcommand("add-presentationref-to-collection") {
+    descr("Adds a presentation to a collection under a specified name. The presentation must already exist in Springfield")
     val presentation: ScallopOption[Path] = trailArg(name = "presentation",
       descr = "referid of the presentation",
       required = true)
@@ -262,7 +264,35 @@ class CommandLineOptions(args: Array[String], properties: PropertiesConfiguratio
       required = true)
     footer(SUBCOMMAND_SEPARATOR)
   }
-  addSubcommand(addPresentationToCollection)
+  addSubcommand(addPresentationRefToCollection)
+
+  val addSubtitlesToVideo = new Subcommand("add-subtitles-to-video") {
+    descr("Adds a subtitles file to an existing video.")
+    val languageCode: ScallopOption[String] = opt(name = "language",
+      descr = "the ISO 639-1 (two letter) language code")
+    val video: ScallopOption[Path] = trailArg(name = "video",
+      descr = "the referid of the video")
+    val subtitles: ScallopOption[Path] = trailArg(name = "webvtt-file",
+      descr = "path to the WebVTT subtitles file to add")
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(addSubtitlesToVideo)
+
+  val addSubtitlesToPresentation = new Subcommand("add-subtitles-to-presentation") {
+    descr(
+      """
+        | Adds one or more subtitles file(s) to an existing presentation. If the presentation contains multiple videos
+        | the same number of WebVTT files must be specified; they will be added in the specified order to the respective videos.
+      """.stripMargin)
+    val languageCode: ScallopOption[String] = opt(name = "language",
+      descr = "the ISO 639-1 (two letter) language code")
+    val presentation: ScallopOption[Path] = trailArg(name = "presentation",
+      descr = "referid of the presentation")
+    val subtitles: ScallopOption[List[String]] = trailArg(name = "webvtt-file(s)", // TODO: change to List[Path] ? We shall need a valueconverter then, however.
+      descr = "path to the WebVTT subtitles file(s) to add")
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(addSubtitlesToPresentation)
 
   footer("")
 }
