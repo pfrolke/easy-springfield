@@ -61,16 +61,16 @@ trait Smithers2 {
   }
 
   /**
-   * Sets or clears the requireTicket flag on the specified video. The path must point to the
-   * actual video resource, not to a reference to the video
+   * Sets or clears the requireTicket flag on the specified audio/video file. The path must point to the
+   * actual audio/video resource, not to a reference to the audio/video
    *
-   * @param video         path to the video
+   * @param avFile         path to the audio/video
    * @param requireTicket true to set the flag, false to clear it
    * @return
    */
-  def setRequireTicket(video: Path, requireTicket: Boolean): Try[Unit] = {
-    trace(video, requireTicket)
-    val uri = path2Uri(video.resolve("properties").resolve("private"))
+  def setRequireTicket(avFile: Path, requireTicket: Boolean): Try[Unit] = {
+    trace(avFile, requireTicket)
+    val uri = path2Uri(avFile.resolve("properties").resolve("private"))
     debug(s"Smithers2 URI: $uri")
     for {
       response <- http("PUT", uri, requireTicket.toString)

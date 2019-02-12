@@ -103,15 +103,15 @@ object Command extends App
         list
     case Some(cmd @ opts.setRequireTicket) =>
       for {
-        videos <- getReferencedPaths(cmd.path()).map(_.filter(p => p.getNameCount > 1 && avNames.contains(p.getName(p.getNameCount - 2).toString)))
-        _ <- approveAction(videos,
+        avFiles <- getReferencedPaths(cmd.path()).map(_.filter(p => p.getNameCount > 1 && avNames.contains(p.getName(p.getNameCount - 2).toString)))
+        _ <- approveAction(avFiles,
           s"""
-             |WARNING: THIS ACTION COULD EXPOSE VIDEOS TO UNAUTHORIZED VIEWERS.
-             |These videos will be set to require-ticket = ${ cmd.requireTicket() }
+             |WARNING: THIS ACTION COULD EXPOSE AUDIO/VIDEO FILES TO UNAUTHORIZED VIEWERS/LISTENERS.
+             |These audio/video files will be set to require-ticket = ${ cmd.requireTicket() }
              |
-             |(Note that you may have to clear your browser cache after making videos private to effectively test the result.)
+             |(Note that you may have to clear your browser cache after making audio/video files private to effectively test the result.)
            """.stripMargin)
-        _ <- videos.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
+        _ <- avFiles.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
       } yield s"Video(s) set to require-ticket = ${ cmd.requireTicket() }"
     case Some(cmd @ opts.createTicket) =>
       for {
