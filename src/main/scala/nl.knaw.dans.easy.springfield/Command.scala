@@ -167,10 +167,10 @@ object Command extends App
   private def getAllProgress(domain: String): Try[Map[JobRef, Progress]] = {
     for {
       videoQueue <- getXmlFromPath(Paths.get("domain", domain, "service", "momar", "queue", "high"))
-      videoProgress = getProgressOfCurrentJobs(videoQueue, "video")
+      videoProgress = getProgressOfCurrentJobs(videoQueue, video)
       _ = debug(s"Video progress: $videoProgress")
       audioQueue <- getXmlFromPath(Paths.get("domain", domain, "service", "willie", "queue", "high"))
-      audioProgress = getProgressOfCurrentJobs(audioQueue, "audio")
+      audioProgress = getProgressOfCurrentJobs(audioQueue, audio)
       _ = debug(s"Audio progress: $audioProgress")
     } yield videoProgress ++ audioProgress
   }
