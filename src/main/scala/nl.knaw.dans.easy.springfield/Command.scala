@@ -21,6 +21,7 @@ import java.util.UUID
 import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import nl.knaw.dans.easy.springfield.AvType._
 
 import scala.io.StdIn
 import scala.util.{ Failure, Success, Try }
@@ -33,6 +34,7 @@ object Command extends App
   with ListUsers
   with ListCollections
   with GetStatus
+  with GetProgressOfCurrentJobs
   with CreateSpringfieldActions
   with Ticket {
 
@@ -82,31 +84,23 @@ object Command extends App
            else "\nParent items have been NOT been checked.")
       }
     case Some(cmd @ opts.status) =>
-      val TABS = "%-35s %-40s %-7s %-10s\n"
-      val maybeList =
-        if (cmd.user.toOption.isDefined) {
-          getStatusSummaries(cmd.domain(), cmd.user())
-            .map(_.map(s => TABS format(s.user, s.filename, s.requireTicket, s.status.toUpperCase)).mkString)
-        }
-        else {
-          getUserList(cmd.domain())
-            .map {
-              _.map {
-                user =>
-                  getStatusSummaries(cmd.domain(), user)
-                    .map(_.map(s => TABS format(s.user, s.filename, s.requireTicket, s.status.toUpperCase)).mkString)
-                    .recover { case _ => TABS format(user, "*** COULD NOT RETRIEVE DATA ***", "") }.get
-              }.mkString
-            }
-        }
-
-      maybeList.map {
-        list =>
-          "\n" +
-            (TABS format("USER", "A/V FILE", "PRIVATE", "STATUS")) +
-            (TABS format("=" * "USER".length, "=" * "A/V FILE".length, "=" * "PRIVATE".length, "=" * "STATUS".length)) +
-            list
-      }
+      val TABS = "%-35s %-40s %-7s %-10s %8s\n"
+      for {
+        allProgress <- getAllProgress(cmd.domain())
+        formatSummary = (s: AvStatusSummary) => TABS format(s.user, s.filename, s.requireTicket, s.status.toUpperCase, getProgressOfJob(allProgress, s.jobRef, s.status))
+        list <- cmd.user.toOption
+          .map(user => getStatusSummaries(cmd.domain(), user).map(_.map(formatSummary).mkString))
+          .getOrElse {
+            getUserList(cmd.domain()).map(_.map { user =>
+              getStatusSummaries(cmd.domain(), user)
+                .map(_.map(formatSummary).mkString)
+                .getOrRecover { _ => TABS format(user, "*** COULD NOT RETRIEVE DATA ***", "") }
+            }.mkString)
+          }
+      } yield "\n" +
+        (TABS format("USER", "A/V FILE", "PRIVATE", "STATUS", "PROGRESS")) +
+        (TABS format("=" * "USER".length, "=" * "A/V FILE".length, "=" * "PRIVATE".length, "=" * "STATUS".length, "=" * "PROGRESS".length)) +
+        list
     case Some(cmd @ opts.setRequireTicket) =>
       for {
         videos <- getReferencedPaths(cmd.path()).map(_.filter(p => p.getNameCount > 1 && avNames.contains(p.getName(p.getNameCount - 2).toString)))
@@ -168,6 +162,23 @@ object Command extends App
       xml <- getXmlFromPath(Paths.get("domain", domain, "user", user, "collection"))
       collections <- Try { listCollections(xml) }
     } yield collections
+  }
+
+  private def getAllProgress(domain: String): Try[Map[JobRef, Progress]] = {
+    for {
+      videoQueue <- getXmlFromPath(Paths.get("domain", domain, "service", "momar", "queue", "high"))
+      videoProgress = getProgressOfCurrentJobs(videoQueue, "video")
+      _ = debug(s"Video progress: $videoProgress")
+      audioQueue <- getXmlFromPath(Paths.get("domain", domain, "service", "willie", "queue", "high"))
+      audioProgress = getProgressOfCurrentJobs(audioQueue, "audio")
+      _ = debug(s"Audio progress: $audioProgress")
+    } yield videoProgress ++ audioProgress
+  }
+
+  private def getProgressOfJob(allProgress: Map[JobRef, Progress], jobRef: JobRef, status: String): String = {
+    if (status equalsIgnoreCase "DONE") "100%"
+    else if (status equalsIgnoreCase "STILLS") "~100%"
+    else allProgress.get(jobRef).map(p => s"$p%").getOrElse("n/a")
   }
 
   private def getStatusSummaries(domain: String, user: String): Try[Seq[AvStatusSummary]] = {

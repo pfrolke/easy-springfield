@@ -15,9 +15,9 @@
  */
 package nl.knaw.dans.easy.springfield
 
-import scala.xml.Elem
+import scala.xml.{ Elem, NodeSeq }
 
-case class AvStatusSummary(user: String, filename: String, status: String, requireTicket: Boolean)
+case class AvStatusSummary(user: String, filename: String, status: String, jobRef: String, requireTicket: Boolean)
 
 trait GetStatus {
 
@@ -25,15 +25,32 @@ trait GetStatus {
     for {
       video <- parent \ avType
       requireTicket = video \ "properties" \ "private"
-      raw2 <- video \ s"raw${avType}"
+      raw2 <- video \ s"raw${ avType }"
       if raw2 \@ "id" == "2"
       filename <- raw2 \ "properties" \ "filename"
       status = raw2 \ "properties" \ "status"
+      job = raw2 \ "properties" \ "job"
+      screensJob = video \ "screens" \ "properties" \ "joburi"
     } yield
       AvStatusSummary(
         forUser,
-        filename.text, if (status.isEmpty) "waiting"
-                       else status.head.text,
+        filename.text,
+        calcStatus(job, screensJob, status),
+        job.map(_.text).headOption.getOrElse(""),
         requireTicket = requireTicket.isEmpty || requireTicket.head.text.toBoolean)
+  }
+
+  private def calcStatus(transCodingJob: NodeSeq, screensJob: NodeSeq, status: NodeSeq): String = {
+    if (screensJob.nonEmpty) "stills"
+    else if (status.isEmpty) {
+      if (transCodingJob.isEmpty) "waiting"
+      else if (isTranscodingJob(transCodingJob.head.text)) "transcode"
+      else "unkown"
+    }
+    else status.head.text
+  }
+
+  private def isTranscodingJob(jobRef: String): Boolean = {
+    (jobRef contains "momar") || (jobRef contains "willie")
   }
 }

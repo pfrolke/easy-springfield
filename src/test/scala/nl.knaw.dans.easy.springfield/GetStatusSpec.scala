@@ -36,7 +36,7 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
       </video>
     </fsxml>
     val result = getStatus(forUser, "video", parent)
-    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, "",  requireTicket = true))
   }
 
   it should "return a list of Summary instances for audio as well" in {
@@ -58,7 +58,7 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
       </audio>
     </fsxml>
     val result = getStatus(forUser, "audio", parent)
-    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, "", requireTicket = true))
   }
 
   it should "return status 'waiting' if no status element is found" in {
@@ -79,7 +79,51 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
       </video>
     </fsxml>
     val result = getStatus(forUser, "video", parent)
-    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = true))
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, "", requireTicket = true))
+  }
+
+  it should "return status 'transcode' if no status element is found but a momar job reference is" in {
+    val forUser = "testUser"
+    val expectedFileName = "GV_AVA_doven_09.mp4"
+    val expectedStatus = "transcode"
+    val parent = <fsxml>
+      <video id="11">
+        <rawvideo id="1">
+          <properties>
+          </properties>
+        </rawvideo>
+        <rawvideo id="2">
+          <properties>
+            <filename>{ expectedFileName }</filename>
+            <job>/domain/dans/service/momar/job/1</job>
+          </properties>
+        </rawvideo>
+      </video>
+    </fsxml>
+    val result = getStatus(forUser, "video", parent)
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, "/domain/dans/service/momar/job/1", requireTicket = true))
+  }
+
+  it should "return status 'transcode' if no status element is found but a willie job reference is" in {
+    val forUser = "testUser"
+    val expectedFileName = "GV_AVA_blinden_09.mp3"
+    val expectedStatus = "transcode"
+    val parent = <fsxml>
+      <audio id="11">
+        <rawaudio id="1">
+          <properties>
+          </properties>
+        </rawaudio>
+        <rawaudio id="2">
+          <properties>
+            <filename>{ expectedFileName }</filename>
+            <job>/domain/dans/service/willie/job/1</job>
+          </properties>
+        </rawaudio>
+      </audio>
+    </fsxml>
+    val result = getStatus(forUser, "audio", parent)
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, "/domain/dans/service/willie/job/1", requireTicket = true))
   }
 
   it should "return requireTicket = false only if explicitly stated" in {
@@ -103,6 +147,6 @@ class GetStatusSpec extends TestSupportFixture with GetStatus {
       </video>
     </fsxml>
     val result = getStatus(forUser, "video", parent)
-    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, requireTicket = false))
+    result should contain(AvStatusSummary(forUser, expectedFileName, expectedStatus, "", requireTicket = false))
   }
 }

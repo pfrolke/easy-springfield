@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.easy
+package nl.knaw.dans.easy.springfield
 
-package object springfield {
-  case class SpringfieldErrorException(errorCode: Int, message: String, details: String) extends Exception(s"($errorCode) $message: $details")
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
-  val MAX_NAME_LENGTH = 100
+import scala.xml.Elem
 
-  object AvType extends Enumeration {
-    type AvType = Value
-    val audio, video = Value
+trait GetProgressOfCurrentJobs {
+  type JobRef = String
+  type JobType = AvType.Value
+  type Progress = String
+
+  def getProgressOfCurrentJobs(queue: Elem, jobType: JobType): Map[JobRef, Progress] = {
+    (queue \ "queue" \ "job")
+      .flatMap(job => for {
+        optId <- (job \ s"raw$jobType" \ "properties" \ "job").map(_.text).headOption
+        optProgress <- (job \ "status" \ "properties" \ "details").map(_.text).headOption
+      } yield (optId, optProgress))
+      .toMap
   }
 }
