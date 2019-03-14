@@ -26,7 +26,6 @@ import scalaj.http.Http
 import scala.util.{ Failure, Success, Try }
 import scala.xml.{ Elem, XML }
 
-
 trait Smithers2 {
   this: DebugEnhancedLogging =>
   val smithers2BaseUri: URI
@@ -64,7 +63,7 @@ trait Smithers2 {
    * Sets or clears the requireTicket flag on the specified audio/video file. The path must point to the
    * actual audio/video resource, not to a reference to the audio/video
    *
-   * @param avFile         path to the audio/video
+   * @param avFile        path to the audio/video
    * @param requireTicket true to set the flag, false to clear it
    * @return
    */
@@ -177,6 +176,41 @@ trait Smithers2 {
       }
   }
 
+  def getVideoRefIdForVideoInPresentation(presentation: Path, id: String): Try[String] = {
+    getXmlFromPath(presentation)
+      .flatMap(extractVideoRefFromPresentationForVideoId(id))
+  }
+
+  private[springfield] def extractVideoRefFromPresentationForVideoId(index: String)(presentationXml: Elem): Try[String] = Try {
+    (presentationXml \\ "video")
+      .collectFirst { case node if (node \ "@id").text == index => (node \\ "@referid").text }
+      .map(relativizePathString)
+      .getOrElse(throw new IllegalStateException(s"No videoReference found for index '$index' in the presentation"))
+  }
+
+  private def relativizePathString(path: String): String = {
+    if (path.startsWith("/") && path.length >= 2) path.substring(1)
+    else path
+  }
+
+  def putSubtitlesToPresentation(videoRefInPresentation: Path, languageCode: String, fileName: String): Try[Elem] = {
+    val uri = path2Uri(videoRefInPresentation.resolve("properties").resolve(s"webvtt_$languageCode"))
+    debug(s"Smithers2 URI: $uri")
+    http("PUT", uri, fileName).flatMap(response => {
+      if (response.code == 200) checkResponseOk(response.body)
+      else Failure(new IllegalStateException(s"response code '${ response.code }' was not equal to 200, body = '${ response.body }'"))
+    })
+  }
+
+  def putSubtitlesToVideo(videoRefId: Path, languageCode: String, fileName: String): Try[Elem] = {
+    val uri = path2Uri(videoRefId.resolve("properties").resolve(s"webvtt_$languageCode"))
+    debug(s"Smithers2 URI: $uri")
+    http("PUT", uri, fileName).flatMap(response => {
+      if (response.code == 200) checkResponseOk(response.body)
+      else Failure(new IllegalStateException(s"response code '${ response.code }' was not equal to 200, body = '${ response.body }'"))
+    })
+  }
+
   def addVideoRefToPresentation(videoReferId: Path, videoName: String, presentation: Path): Try[Unit] = {
     for {
       _ <- checkVideoReferId(videoReferId)
@@ -194,14 +228,13 @@ trait Smithers2 {
       if response.code == 200
       _ <- checkResponseOk(response.body)
     } yield ()
-
   }
 
   def addPresentationRefToCollection(presentationReferId: Path, presentationName: String, collection: Path): Try[Unit] = {
     val uri = path2Uri(collection.resolve("presentation").resolve(presentationName).resolve("attributes"))
     debug(s"PUT to $uri")
     for {
-      _ <- checkPresentation(presentationReferId, true)
+      _ <- checkPresentation(presentationReferId, allowOnlyReferId = true)
       _ <- checkCollection(collection)
       _ <- checkNameLength(presentationName)
       response <- http("PUT", uri,
@@ -224,7 +257,7 @@ trait Smithers2 {
     if (presentation.getNameCount > 3 && presentation.getName(presentation.getNameCount - 2).toString == "presentation") Success(())
     else Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> " +
       (if (allowOnlyReferId) ""
-       else s"OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>")))
+       else "OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>")))
   }
 
   def checkCollection(collection: Path): Try[Unit] = {
@@ -232,12 +265,10 @@ trait Smithers2 {
     else Failure(new IllegalArgumentException(s"$collection does not appear to be a collection Springfield path. Expected format: [domain/<d>/]user/<u>/collection/<name>"))
   }
 
-
   def checkNameLength(name: String): Try[Unit] = {
     if (name.length <= MAX_NAME_LENGTH) Success(())
-    else Failure(new IllegalArgumentException(s"Name is longer than 100 chars: $name"))
+    else Failure(new IllegalArgumentException(s"Name is longer than $MAX_NAME_LENGTH chars: $name"))
   }
-
 
   def getCompletePath(path: Path): Path = {
     if (path.getName(0).toString == "domain") path
@@ -260,7 +291,6 @@ trait Smithers2 {
       .timeout(connTimeoutMs = smithers2ConnectionTimeoutMs, readTimeoutMs = smithers2ReadTimoutMs)
       .asBytes
   }
-
 
   def checkResponseOk(content: Array[Byte]): Try[Elem] = {
     /*

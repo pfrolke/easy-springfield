@@ -18,10 +18,9 @@ package nl.knaw.dans.easy.springfield
 import java.nio.file.{ Path, Paths }
 import java.util.UUID
 
-import better.files.File
+import nl.knaw.dans.easy.springfield.AvType._
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import nl.knaw.dans.easy.springfield.AvType._
 
 import scala.io.StdIn
 import scala.util.{ Failure, Success, Try }
@@ -31,6 +30,7 @@ object Command extends App
   with DebugEnhancedLogging
   with EasySpringfieldApp
   with Smithers2
+  with AddSubtitles
   with ListUsers
   with ListCollections
   with GetStatus
@@ -43,8 +43,7 @@ object Command extends App
   type FeedBackMessage = String
 
   private val avNames = Set("audio", "video")
-  private val configuration = Configuration(File(System.getProperty("app.home")))
-  private val opts = new CommandLineOptions(args, properties, configuration.version)
+  private val opts = new CommandLineOptions(args, config)
   opts.verify()
 
   val result: Try[FeedBackMessage] = opts.subcommand match {
@@ -141,6 +140,22 @@ object Command extends App
         _ <- checkPathIsRelative(cmd.presentation())
         _ <- addPresentationRefToCollection(getCompletePath(cmd.presentation()), cmd.name(), cmd.collection())
       } yield "Presentation reference added."
+    case Some(cmd @ opts.addSubtitlesToVideo) =>
+      for {
+        _ <- checkPathIsRelative(cmd.video())
+        videoRefId = getCompletePath(cmd.video())
+        _ <- addSubtitlesToVideo(cmd.subtitles(), videoRefId, cmd.languageCode())
+      } yield "Subtitles added to video."
+    case Some(cmd @ opts.addSubtitlesToPresentation) =>
+      for {
+        _ <- checkPathIsRelative(cmd.presentation())
+        completePath = getCompletePath(cmd.presentation())
+        _ <- checkPresentation(completePath)
+        _ <- addSubtitlesToPresentation(1, cmd.languageCode(), completePath, cmd.subtitles())
+      } yield "Subtitles added to presentation"
+    case Some(cmd @ opts.showAvailableLanguageCodes) =>
+      println(config.languages.mkString("\n"))
+      Success("Finished printing supported language codes.")
     case _ => Failure(new IllegalArgumentException("Enter a valid subcommand"))
   }
 

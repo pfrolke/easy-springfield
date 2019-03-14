@@ -26,6 +26,7 @@ SYNOPSIS
     easy-springfield add-presentationref-to-collection <presentation> <name> <collection>
     easy-springfield add-subtitles-to-video --language <code> <video> <web-vtt-file>
     easy-springfield add-subtitles-to-presentation --language <code> <presentation> <web-vtt-file>...
+    easy-springfield show-available-language-codes
 
 Note:  `add-subtitles-to-video` and `add-subtitles-to-presentation` are still to be implememented.
 
@@ -357,6 +358,13 @@ ARGUMENTS
           presentation (required)     referid of the presentation
           webvtt-file(s) (required)   path to the WebVTT subtitles file(s) to add
         ---
+        
+        Subcommand: show-available-language-codes - 
+         Prints a list of all language codes that are currently supported by the ISO639-1 standard
+         
+           -h, --help   Show help message
+        ---  
+      
 
 INSTALLATION AND CONFIGURATION
 ------------------------------

@@ -20,8 +20,9 @@ import better.files.File._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.apache.commons.configuration.PropertiesConfiguration
 
-case class Configuration(version: String, properties: PropertiesConfiguration)
-
+case class Configuration(version: String, properties: PropertiesConfiguration, languages: List[String]) {
+  def isValidLanguageCode(code: String): Boolean = languages.contains(code)
+}
 object Configuration extends DebugEnhancedLogging {
 
   def apply(home: File): Configuration = {
@@ -39,7 +40,9 @@ object Configuration extends DebugEnhancedLogging {
       properties = new PropertiesConfiguration() {
         setDelimiterParsingDisabled(true)
         load((cfgPath / "application.properties").toJava)
-      }
-    )
+      },
+      (cfgPath / "iso-639-1.txt")
+        .lines
+        .toList)
   }
 }

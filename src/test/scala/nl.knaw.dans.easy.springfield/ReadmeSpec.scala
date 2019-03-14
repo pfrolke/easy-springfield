@@ -15,8 +15,8 @@
  */
 package nl.knaw.dans.easy.springfield
 
-import java.io.{ByteArrayOutputStream, File}
-import java.nio.file.{Files, Path, Paths}
+import java.io.{ ByteArrayOutputStream, File }
+import java.nio.file.Paths
 
 import org.apache.commons.configuration.PropertiesConfiguration
 import org.scalatest._
@@ -28,7 +28,7 @@ class ReadmeSpec extends FlatSpec with Matchers with CustomMatchers {
     load(Paths.get("src/main/assembly/dist/cfg", "application.properties").toFile)
   }
 
-  private val clo = new CommandLineOptions(Array[String](), mockedConfigurationProperties, "version x.y.z") {
+  private val clo = new CommandLineOptions(Array[String](), Configuration("version x.y.z", mockedConfigurationProperties, List())) {
     //avoids System.exit() in case of invalid arguments or "--help"
     override def verify(): Unit = {}
   }

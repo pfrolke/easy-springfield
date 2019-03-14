@@ -16,28 +16,25 @@
 package nl.knaw.dans.easy.springfield
 
 import java.net.URI
-import java.nio.file.{ Files, Paths }
+import java.nio.file.{ Path, Paths }
 
+import better.files.File
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
-import org.apache.commons.configuration.PropertiesConfiguration
 
 trait EasySpringfieldApp {
   this: DebugEnhancedLogging
     with Smithers2
     with ListUsers
     with CreateSpringfieldActions =>
-  private val cfgPath = Seq(
-    Paths.get("/etc/opt/dans.knaw.nl/easy-springfield/"),
-    Paths.get(System.getProperty("app.home")).resolve("cfg/"))
 
-  private val cfg = cfgPath.find(Files.exists(_)).get
-  val properties = new PropertiesConfiguration(cfg.resolve("application.properties").toFile)
-  val smithers2BaseUri: URI = new URI(properties.getString("springfield.smithers2.base-uri"))
-  val smithers2ConnectionTimeoutMs: Int = properties.getInt("springfield.smithers2.connection-timeout-ms")
-  val smithers2ReadTimoutMs: Int = properties.getInt("springfield.smithers2.read-timeout-ms")
-  val lenny: URI = new URI(properties.getString("springfield.lenny.uri"))
-  val lennyConnectionTimeoutMs: Int = properties.getInt("springfield.lenny.connection-timeout-ms")
-  val lennyReadTimeoutMs: Int = properties.getInt("springfield.lenny.read-timeout-ms")
+  val config: Configuration = Configuration(File(System.getProperty("app.home")))
+  val smithers2BaseUri: URI = new URI(config.properties.getString("springfield.smithers2.base-uri"))
+  val smithers2ConnectionTimeoutMs: Int = config.properties.getInt("springfield.smithers2.connection-timeout-ms")
+  val smithers2ReadTimoutMs: Int = config.properties.getInt("springfield.smithers2.read-timeout-ms")
+  val lenny: URI = new URI(config.properties.getString("springfield.lenny.uri"))
+  val lennyConnectionTimeoutMs: Int = config.properties.getInt("springfield.lenny.connection-timeout-ms")
+  val lennyReadTimeoutMs: Int = config.properties.getInt("springfield.lenny.read-timeout-ms")
 
-  val defaultDomain: String = properties.getString("springfield.default-domain")
+  val defaultDomain: String = config.properties.getString("springfield.default-domain")
+  val springFieldDataDir: Path = Paths.get(config.properties.getString("springfield.data-dir"))
 }
