@@ -164,18 +164,6 @@ trait Smithers2 {
       }.flatten.map(_.distinct)
   }
 
-  def resolveToReferId(ppath: Path): Try[Path] = {
-    getXmlFromPath(ppath)
-      .map(_ \\ "@referid")
-      .map {
-        case refs if refs.size == 1 =>
-          val referid = refs.head.text
-          Paths.get(if (referid.startsWith("/")) referid.substring(1)
-                    else referid)
-        case _ => ppath
-      }
-  }
-
   def getVideoRefIdForVideoInPresentation(presentation: Path, id: String): Try[String] = {
     getXmlFromPath(presentation)
       .flatMap(extractVideoRefFromPresentationForVideoId(id))
@@ -188,18 +176,9 @@ trait Smithers2 {
       .getOrElse(throw new IllegalStateException(s"No videoReference found for index '$index' in the presentation"))
   }
 
-  private def relativizePathString(path: String): String = {
+  private[springfield] def relativizePathString(path: String): String = {
     if (path.startsWith("/") && path.length >= 2) path.substring(1)
     else path
-  }
-
-  def putSubtitlesToPresentation(videoRefInPresentation: Path, languageCode: String, fileName: String): Try[Elem] = {
-    val uri = path2Uri(videoRefInPresentation.resolve("properties").resolve(s"webvtt_$languageCode"))
-    debug(s"Smithers2 URI: $uri")
-    http("PUT", uri, fileName).flatMap(response => {
-      if (response.code == 200) checkResponseOk(response.body)
-      else Failure(new IllegalStateException(s"response code '${ response.code }' was not equal to 200, body = '${ response.body }'"))
-    })
   }
 
   def putSubtitlesToVideo(videoRefId: Path, languageCode: String, fileName: String): Try[Elem] = {
@@ -214,9 +193,8 @@ trait Smithers2 {
   def addVideoRefToPresentation(videoReferId: Path, videoName: String, presentation: Path): Try[Unit] = {
     for {
       _ <- checkVideoReferId(videoReferId)
-      _ <- checkPresentation(presentation)
+      presentationReferId <- getPresentationReferIdPath(presentation)
       _ <- checkNameLength(videoName)
-      presentationReferId <- resolveToReferId(presentation)
       _ = debug(s"Resolved to presentation referid: $presentationReferId")
       uri = path2Uri(presentationReferId.resolve("videoplaylist/1/video/").resolve(videoName).resolve("attributes"))
       response <- http("PUT", uri,
@@ -230,11 +208,11 @@ trait Smithers2 {
     } yield ()
   }
 
-  def addPresentationRefToCollection(presentationReferId: Path, presentationName: String, collection: Path): Try[Unit] = {
+  def addPresentationRefToCollection(presentationPath: Path, presentationName: String, collection: Path): Try[Unit] = {
     val uri = path2Uri(collection.resolve("presentation").resolve(presentationName).resolve("attributes"))
     debug(s"PUT to $uri")
     for {
-      _ <- checkPresentation(presentationReferId, allowOnlyReferId = true)
+      presentationReferId <- getPresentationReferIdPath(presentationPath)
       _ <- checkCollection(collection)
       _ <- checkNameLength(presentationName)
       response <- http("PUT", uri,
@@ -253,11 +231,25 @@ trait Smithers2 {
     else Failure(new IllegalArgumentException(s"$videoReferId does not appear to be a video referid. Expected format: [domain/<d>/]user/<u>/video/<number>"))
   }
 
-  def checkPresentation(presentation: Path, allowOnlyReferId: Boolean = false): Try[Unit] = {
-    if (presentation.getNameCount > 3 && presentation.getName(presentation.getNameCount - 2).toString == "presentation") Success(())
-    else Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> " +
-      (if (allowOnlyReferId) ""
-       else "OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>")))
+  def getPresentationReferIdPath(presentation: Path): Try[Path] = { //TODO refine code
+    if (isPresentationPath(presentation) && presentation.getFileName.toString.matches("\\d+")) Success(presentation)
+    else if (isPresentationPath(presentation)) {
+      logger.info(s"received a presentation path with a name, trying to resolve referid for ${ presentation.getFileName }")
+      getXmlFromPath(presentation)
+        .flatMap(xml => extractPresentationReferIdPath(presentation, xml))
+    }
+    else Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"))
+  }
+
+  private def isPresentationPath(presentation: Path): Boolean = {
+    presentation.getNameCount > 3 && presentation.getName(presentation.getNameCount - 2).toString == "presentation"
+  }
+
+  private def extractPresentationReferIdPath(presentation: Path, xml: Elem): Try[Path] = Try {
+    (xml \\ "presentation").map(_ \\ "@referid")
+      .map(node => Paths.get(node.text))
+      .collectFirst { case path: Path if isPresentationPath(path) => Paths.get(relativizePathString(path.toString)) }
+      .getOrElse(throw new IllegalStateException(s"No presentation referid found for presentation name '${ presentation.getFileName }'"))
   }
 
   def checkCollection(collection: Path): Try[Unit] = {

@@ -147,11 +147,11 @@ object Command extends App
         _ <- addSubtitlesToVideo(cmd.subtitles(), videoRefId, cmd.languageCode())
       } yield "Subtitles added to video."
     case Some(cmd @ opts.addSubtitlesToPresentation) =>
-      for {
+      for { //TODO validate that the amount of videos is the same as the amount of provided subtitles
         _ <- checkPathIsRelative(cmd.presentation())
         completePath = getCompletePath(cmd.presentation())
-        _ <- checkPresentation(completePath)
-        _ <- addSubtitlesToPresentation(1, cmd.languageCode(), completePath, cmd.subtitles())
+        presentationRefId <- getPresentationReferIdPath(completePath)
+        _ <- addSubtitlesToPresentation(1, cmd.languageCode(), presentationRefId, cmd.subtitles())
       } yield "Subtitles added to presentation"
     case Some(cmd @ opts.showAvailableLanguageCodes) =>
       println(config.languages.mkString("\n"))
