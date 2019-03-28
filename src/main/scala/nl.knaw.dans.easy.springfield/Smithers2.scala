@@ -226,19 +226,28 @@ trait Smithers2 {
     } yield ()
   }
 
+  def validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(presentationPath: Path, subtitles: List[Path]): Try[Unit] = {
+    getXmlFromPath(presentationPath)
+      .map(getNumberOfVideos)
+      .flatMap {
+        case numberInXml: Int if numberInXml == subtitles.size => Success(())
+        case numberInXml: Int => Failure(new IllegalArgumentException(s"The provided number of subtitles '${ subtitles.size }' did not match the number of videos in the presentation '$numberInXml'"))
+      }
+  }
+
+  def getNumberOfVideos(presentationXml: Elem): Int = {
+    (presentationXml \\ "videoplaylist" \\ "video").length
+  }
+
   def checkVideoReferId(videoReferId: Path): Try[Unit] = {
     if (videoReferId.getNameCount > 3 && videoReferId.getName(videoReferId.getNameCount - 2).toString == "video") Success(())
     else Failure(new IllegalArgumentException(s"$videoReferId does not appear to be a video referid. Expected format: [domain/<d>/]user/<u>/video/<number>"))
   }
 
-  def getPresentationReferIdPath(presentation: Path): Try[Path] = { //TODO refine code
-    if (isPresentationPath(presentation) && presentation.getFileName.toString.matches("\\d+")) Success(presentation)
-    else if (isPresentationPath(presentation)) {
-      logger.info(s"received a presentation path with a name, trying to resolve referid for ${ presentation.getFileName }")
-      getXmlFromPath(presentation)
-        .flatMap(xml => extractPresentationReferIdPath(presentation, xml))
-    }
-    else Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"))
+  def getPresentationReferIdPath(presentation: Path): Try[Path] = {
+    if (!isPresentationPath(presentation)) Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"))
+    else if (presentation.getFileName.toString.matches("\\d+")) Success(presentation)
+    else getXmlFromPath(presentation).flatMap(extractPresentationReferIdPath(presentation, _))
   }
 
   private def isPresentationPath(presentation: Path): Boolean = {
