@@ -52,7 +52,7 @@ class CommandLineOptions(args: Array[String], config: Configuration) extends Sca
        |$printedName show-available-language-codes
      """.stripMargin
 
-  version(s"$printedName v$config.version")
+  version(s"$printedName v${config.version}")
 
   banner(
     s"""
