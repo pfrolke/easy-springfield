@@ -145,15 +145,25 @@ In summary, to add a folder with videos to Springfield you would perform the fol
    called `videos01` and all the paths in `SRC-VIDEO` start with `videos01/...`  the tool will check if you are all
    set to move `videos01` to the springfield-inbox. (You may of course want to run this command first *without*
    redirecting the output to `videos01.xml`, to check if the generated XML looks OK.)
-7. To be sure that there are no ownership issues `chmod 777` everything in `videos01` and also `videos01.xml`.
-8. Move (or copy) the directory `videos01` to the springfield-inbox.
-9. Move (or copy) the Springfield actions file `videos01.xml` to the springfield-inbox.
+7. To be sure that there are no ownership issues `chmod 777` everything in `videos01` and also `videos01.xml`. 
+8. Move (or copy) the directory `videos01` to the springfield-inbox. (Note: do this as the `easy-ingest-flow` user!)
+9. Move (or copy) the Springfield actions file `videos01.xml` to the springfield-inbox.  (Note: do this as the `easy-ingest-flow` user!)
 
 The Springfield service `uter` checks the inbox once a minute for new files. Processing the videos may take a while,
 so at this point you might go off and take care of some other task. To check the status you can run the `status`
 subcommand from time to time (see next section).
 
 To debug any problems, it is best to examine `uter`'s  log file at `/var/log/tomcat/uter/uter.log`. 
+
+#### Adding videos to existing presentations and/or collections
+To add missing videos to existing presentations and/or collections you will first need to:
+ 
+1. Create a temporary collection under the parent user;
+2. add the videos in the normal way described above;
+3. add the references to the videos (or to the presentations) to the existing presentations (or collections). Using
+   the [command described below](fixing-the-springfield-hierarchy);
+4. delete the temporary (presentations and) collection using the `delete` subcommand, **without the `-r` option** (or 
+   you will end up removing the videos as well).
  
 ### Status report
 Processing the videos in the inbox takes a while. The `status` command generates a report that 
@@ -187,8 +197,8 @@ faced with an increasing amount of wasted disk space.
 ### Fixing the Springfield hierarchy
 To fix problems in the Springfield hierarchy the following subcommands can be used.
 
-* `add-video-to-presentation` - this adds a video that is already in Springfield to a presentation.
-* `add-presentation-to-collection` - this adds a presentation that is already in Springfield to a collection.
+* `add-videoref-to-presentation` - this adds a video that is already in Springfield to a presentation.
+* `add-presentationref-to-collection` - this adds a presentation that is already in Springfield to a collection.
 
 Together with the `delete` subcommand, used without the `-r` option, it is possible to repair the Springfield hierarchy, if it
 becomes corrupted.
