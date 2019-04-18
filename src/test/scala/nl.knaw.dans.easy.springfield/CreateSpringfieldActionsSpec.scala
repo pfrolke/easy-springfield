@@ -24,7 +24,7 @@ import scala.xml.Elem
 
 class CreateSpringfieldActionsSpec extends TestSupportFixture with Inside with CreateSpringfieldActions {
   override val defaultDomain = "dans"
-  private val springFieldActionsNameSpaceUri: String = "http://easy.dans.knaw.nl/extern/springfield-actions/"
+  private val springFieldActionsNameSpaceUri: String = "http://easy.dans.knaw.nl/external/springfield-actions/"
 
   "createAddVideo" should "return a filled-in video element" in {
     val videoElem = createAddVideo(Paths.get("/my/source/vid.mp4"), "vid01.mp4")
