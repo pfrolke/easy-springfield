@@ -79,6 +79,25 @@ trait Smithers2 {
   }
 
   /**
+   * Sets the playmode for playlist in a presentation. The path must point to the
+   * actual playlist resource.
+   *
+   * @param videoPlayListInPresentationPath path to the playlist in the presentation
+   * @param mode                            {menu|continuous} the to be played mode
+   * @return
+   */
+  def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
+    trace(videoPlayListInPresentationPath, mode)
+    val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
+    debug(s"Smithers2 URI: $uri")
+    for {
+      response <- http("PUT", uri, mode)
+      if response.code == 200
+      _ <- checkResponseOk(response.body)
+    } yield ()
+  }
+
+  /**
    * Attempts to delete the item at `path`
    *
    * @param path the Springfield path of the item to delete
@@ -242,6 +261,18 @@ trait Smithers2 {
   def checkVideoReferId(videoReferId: Path): Try[Unit] = {
     if (videoReferId.getNameCount > 3 && videoReferId.getName(videoReferId.getNameCount - 2).toString == "video") Success(())
     else Failure(new IllegalArgumentException(s"$videoReferId does not appear to be a video referid. Expected format: [domain/<d>/]user/<u>/video/<number>"))
+  }
+
+  def setPlayModeForPresentation(presentationReferId: Path, mode: String): Try[Unit] = {
+    getXmlFromPath(presentationReferId)
+      .map(extractVideoPlaylistIds)
+      .map(ids => ids.map(id => setPlayModeForVideoPlayListInPresentation(presentationReferId.resolve(s"videoplaylist").resolve(id), mode)))
+  }
+
+  def extractVideoPlaylistIds(presentationXml: Elem): List[String] = {
+    (presentationXml \\ "videoplaylist")
+      .map(node => (node \ "@id").text)
+      .toList
   }
 
   def getPresentationReferIdPath(presentation: Path): Try[Path] = {

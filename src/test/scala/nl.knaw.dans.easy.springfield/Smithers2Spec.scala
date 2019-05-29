@@ -40,6 +40,8 @@ class Smithers2Spec extends TestSupportFixture
             <video id="2" referid="/domain/dans/user/utest/video/7">
             </video>
           </videoplaylist>
+          <videoplaylist id="some_playlist_id">
+            </videoplaylist>
         </presentation>
       </fsxml>
 
@@ -227,6 +229,11 @@ class Smithers2Spec extends TestSupportFixture
     validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(Paths.get("domain/dans/user/utest/presentation/3"), List()) should matchPattern {
       case Failure(e: IllegalArgumentException) if e.getMessage == "The provided number of subtitles '0' did not match the number of videos in the presentation '2'" =>
     }
+  }
+
+  "extractVideoPlaylistIds" should "return the ids of the playlists in the presentation" in {
+   getXmlFromPath(Paths.get("3"))
+      .map(extractVideoPlaylistIds) shouldBe Success(List("1", "some_playlist_id"))
   }
 
   private def createExceptionMessage(path: String): String = s"$path does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"

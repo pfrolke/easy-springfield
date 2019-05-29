@@ -18,6 +18,7 @@ SYNOPSIS
       <videos-csv> > springfield-actions.xml
     easy-springfield status [-u, --user <arg>][-d, --domain <arg>]
     easy-springfield set-require-ticket <springfield-path> {true|false}
+    easy-springfield set-play-mode <springfield-presentation-path> {menu|continuous}
     easy-springfield create-ticket [-e,--expires-after-seconds <arg>] [-t, --ticket <arg>] \
       <springfield-path>
     easy-springfield delete-ticket <ticket>
@@ -301,6 +302,17 @@ ARGUMENTS
           require-ticket (required)     true or false: whether to require a ticket
                                         before playing the presentation (private
                                         audio/video) or not (public audio/video)
+        ---
+        
+        Subcommand: set-play-mode - Sets the play-mode property of the presentation as specified. The springfield-presentation-path
+              must be either a direct presentation referid or full path that can be resolved to a presentation.
+          -h, --help   Show help message
+        
+         trailing arguments:
+          springfield-presentation-path (required)   the parent of items to change
+          mode (required)                            The play mode of the presentation
+                                                     which is either 'menu' or
+                                                     'continuous'
         ---
 
         Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.

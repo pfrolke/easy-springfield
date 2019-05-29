@@ -112,6 +112,14 @@ object Command extends App
            """.stripMargin)
         _ <- avFiles.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
       } yield s"Video(s) set to require-ticket = ${ cmd.requireTicket() }"
+    case Some(cmd @ opts.setPlayMode) =>
+      for {
+        _ <- checkPathIsRelative(cmd.path())
+        completePath = getCompletePath(cmd.path())
+        presentationReferId <- getPresentationReferIdPath(completePath)
+ //       _ <- setPlayModeForPresentation(presentationReferId)
+      } yield "Play mode added or changed."
+
     case Some(cmd @ opts.createTicket) =>
       for {
         _ <- checkPathIsRelative(cmd.path())
