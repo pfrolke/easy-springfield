@@ -117,7 +117,7 @@ object Command extends App
         _ <- checkPathIsRelative(cmd.path())
         completePath = getCompletePath(cmd.path())
         presentationReferId <- getPresentationReferIdPath(completePath)
- //       _ <- setPlayModeForPresentation(presentationReferId)
+        _ <- setPlayModeForPresentation(presentationReferId, cmd.mode())
       } yield "Play mode added or changed."
 
     case Some(cmd @ opts.createTicket) =>
