@@ -258,7 +258,7 @@ trait Smithers2 {
   }
 
   def extractPresentationFromCollection(collectionXml: Elem): Path = {
-    Paths.get((collectionXml \\ "presentation" \ "@referid").text)
+    Paths.get(relativizePathString((collectionXml \\ "presentation" \ "@referid").text))
   }
 
   def extractVideoPlaylistIds(presentationXml: Elem): List[String] = {
