@@ -85,8 +85,8 @@ trait Smithers2 {
   def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
     trace(videoPlayListInPresentationPath, mode)
     val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
-    debug(s"Smithers2 URI: $uri")
-    sendRequestAndCheckResponse(uri, "PUT")
+    println(s"Smithers2 URI: $uri")
+    sendRequestAndCheckResponse(uri, "PUT", mode)
   }
 
   /**
@@ -249,16 +249,20 @@ trait Smithers2 {
    */
   def setPlayModeForPresentation(presentationReferId: Path, mode: String): Try[Unit] = {
     for {
-      referId <- if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId).map(extractPresentationFromCollection)
+      referId <- if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId)
+        .flatMap(xml => extractPresentationFromCollection(xml, presentationReferId.getFileName.toString))
                  else Success(presentationReferId)
-      _ <- getXmlFromPath(referId)
-        .map(extractVideoPlaylistIds)
-        .map(_.map(id => setPlayModeForVideoPlayListInPresentation(presentationReferId.resolve(s"videoplaylist").resolve(id), mode)))
+      xml <- getXmlFromPath(referId)
+      ids = extractVideoPlaylistIds(xml)
+      _ <- ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
+        .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
     } yield ()
   }
 
-  def extractPresentationFromCollection(collectionXml: Elem): Path = {
-    Paths.get(relativizePathString((collectionXml \\ "presentation" \ "@referid").text))
+  def extractPresentationFromCollection(collectionXml: Elem, presentationName: String): Try[Path] = Try {
+    (collectionXml \\ "presentation")
+      .collectFirst { case e: Elem if (e \ "@id").text == presentationName => Paths.get((e \ "@referid").text) }
+      .getOrElse(throw new IllegalArgumentException(s"No presentation with name $presentationName"))
   }
 
   def extractVideoPlaylistIds(presentationXml: Elem): List[String] = {
@@ -320,7 +324,7 @@ trait Smithers2 {
 
   private def sendRequestAndCheckResponse(uri: URI, method: String, body: String = null): Try[Unit] = {
     for {
-      response <- http(method, uri)
+      response <- http(method, uri, body)
       if response.code == 200
       _ <- checkResponseOk(response.body)
     } yield ()

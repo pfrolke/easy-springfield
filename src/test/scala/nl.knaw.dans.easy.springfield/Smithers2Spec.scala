@@ -238,12 +238,26 @@ class Smithers2Spec extends TestSupportFixture
 
   "extractPresentationFromCollection" should "return the path to the presentation" in {
     getXmlFromPath(Paths.get("private_continuous"))
-      .map(extractPresentationFromCollection) shouldBe Success(Paths.get("/domain/dans/user/utest/presentation/1"))
+      .flatMap(extractPresentationFromCollection(_, "private_continuous")) shouldBe Success(Paths.get("/domain/dans/user/utest/presentation/1"))
   }
 
-  it should "return nothing if no presentations are found" in {
+  it should "succeed if the id is found but no referid is found" in {
     getXmlFromPath(Paths.get("3"))
-      .map(extractPresentationFromCollection) shouldBe Success(Paths.get(""))
+      .flatMap(extractPresentationFromCollection(_, "3")) shouldBe Success(Paths.get(""))
+  }
+
+  it should "fail if no xml is found" in {
+    getXmlFromPath(Paths.get("9"))
+      .flatMap(extractPresentationFromCollection(_, "3")) should matchPattern {
+      case Failure(iae: IllegalArgumentException)  if iae.getMessage == "No presentation with name 3" =>
+    }
+  }
+
+  it should "fail if the id is not found" in {
+    getXmlFromPath(Paths.get("3"))
+      .flatMap(extractPresentationFromCollection(_, "9")) should matchPattern {
+      case Failure(iae: IllegalArgumentException)  if iae.getMessage == "No presentation with name 9" =>
+    }
   }
 
   private def createExceptionMessage(path: String): String = s"$path does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"
