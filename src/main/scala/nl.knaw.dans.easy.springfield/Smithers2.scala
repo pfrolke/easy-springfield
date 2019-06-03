@@ -85,7 +85,7 @@ trait Smithers2 {
   def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
     trace(videoPlayListInPresentationPath, mode)
     val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
-    println(s"Smithers2 URI: $uri")
+    debug(s"Smithers2 URI: $uri")
     sendRequestAndCheckResponse(uri, "PUT", mode)
   }
 
