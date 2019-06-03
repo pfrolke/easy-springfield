@@ -239,6 +239,14 @@ trait Smithers2 {
     else Failure(new IllegalArgumentException(s"$videoReferId does not appear to be a video referid. Expected format: [domain/<d>/]user/<u>/video/<number>"))
   }
 
+  /**
+   * First checks if the provided path is a presentation or a presentation in collection. If it is the latter it will first attempt to
+   * retrieve the referid to the presentation. It will than extract the playlist id('s) and assign the desired values to the playmode(s).
+   *
+   * @param presentationReferId path to the presentation
+   * @param mode                string value of the desired playmode
+   * @return Success if the operation succeeded, failure otherwise
+   */
   def setPlayModeForPresentation(presentationReferId: Path, mode: String): Try[Unit] = {
     for {
       referId <- if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId).map(extractPresentationFromCollection)
