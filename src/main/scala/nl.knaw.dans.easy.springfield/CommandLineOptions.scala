@@ -214,7 +214,7 @@ class CommandLineOptions(args: Array[String], config: Configuration) extends Sca
       descr = "The play mode of the presentation which is either 'menu' or 'continuous'",
       required = true)
     validate(mode)(mode => if (mode.trim.equals("menu") || mode.trim.equals("continuous")) Right(())
-                           else Left(s"The supplied mode '$mode' should be either menu or continuous"))
+                           else Left(s"The supplied mode '$mode' should be either 'menu' or 'continuous'."))
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(setPlayMode)

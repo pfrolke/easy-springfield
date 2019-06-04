@@ -236,6 +236,11 @@ class Smithers2Spec extends TestSupportFixture
       .map(extractVideoPlaylistIds) shouldBe Success(List("1", "some_playlist_id"))
   }
 
+  it should "not return an empty list if no playlist ids are found" in {
+    getXmlFromPath(Paths.get("private_continuous"))
+      .map(extractVideoPlaylistIds) shouldBe Success(List())
+  }
+
   "extractPresentationFromCollection" should "return the path to the presentation" in {
     getXmlFromPath(Paths.get("private_continuous"))
       .flatMap(extractPresentationFromCollection(_, "private_continuous")) shouldBe Success(Paths.get("/domain/dans/user/utest/presentation/1"))
