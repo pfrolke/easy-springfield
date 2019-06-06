@@ -21,9 +21,11 @@ import java.nio.file.{ Path, Paths }
 import java.util.UUID
 
 import nl.knaw.dans.easy.springfield.AvType._
+import nl.knaw.dans.easy.springfield.Playmode.Playmode
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import resource.managed
+import org.rogach.scallop.Subcommand
 
 import scala.io.StdIn
 import scala.util.{ Failure, Success, Try }
@@ -39,7 +41,8 @@ object Command extends App
   with GetStatus
   with GetProgressOfCurrentJobs
   with CreateSpringfieldActions
-  with Ticket {
+  with Ticket
+  with SetPlaymode {
 
   import scala.language.reflectiveCalls
 
@@ -115,6 +118,15 @@ object Command extends App
            """.stripMargin)
         _ <- avFiles.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
       } yield s"Video(s) set to require-ticket = ${ cmd.requireTicket() }"
+    case Some(cmd @ opts.setPlayMode) =>
+      for {
+        _ <- checkPathIsRelative(cmd.path())
+        completePath = getCompletePath(cmd.path())
+        presentationReferId <- getPresentationReferIdPath(completePath)
+        playmode <- toPlayMode(cmd.mode())
+        _ <- setPlayModeForPresentation(presentationReferId, playmode)
+      } yield "Play mode added or changed."
+
     case Some(cmd @ opts.createTicket) =>
       for {
         _ <- checkPathIsRelative(cmd.path())
@@ -161,6 +173,13 @@ object Command extends App
       println(config.languages.mkString("\n"))
       Success("Finished printing supported language codes.")
     case _ => Failure(new IllegalArgumentException("Enter a valid subcommand"))
+  }
+
+  private def toPlayMode(mode: String): Try[Playmode] = Try {
+    Playmode.
+      values
+      .find(_.toString == mode)
+      .getOrElse(throw new IllegalArgumentException(s"playmode `$mode` not one of ${ Playmode.values }"))
   }
 
   result.map(msg => Console.err.println(s"OK: $msg"))

@@ -71,11 +71,7 @@ trait Smithers2 {
     trace(avFile, requireTicket)
     val uri = path2Uri(avFile.resolve("properties").resolve("private"))
     debug(s"Smithers2 URI: $uri")
-    for {
-      response <- http("PUT", uri, requireTicket.toString)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
-    } yield ()
+    sendRequestAndCheckResponse(uri, "PUT")
   }
 
   /**
@@ -88,22 +84,14 @@ trait Smithers2 {
     trace(path)
     val uri = path2Uri(path)
     debug(s"Smithers2 URI: $uri")
-    for {
-      response <- http("DELETE", uri)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
-    } yield ()
+    sendRequestAndCheckResponse(uri, "DELETE")
   }
 
   def createUser(user: String, targetDomain: String): Try[Unit] = {
     trace(user, targetDomain)
     val uri = path2Uri(Paths.get("domain", targetDomain, "user", user, "properties"))
     debug(s"Smithers2 URI: $uri")
-    for {
-      response <- http("PUT", uri, <fsxml><properties/></fsxml>.toString)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
-    } yield ()
+    sendRequestAndCheckResponse(uri, "PUT", <fsxml><properties/></fsxml>.toString)
   }
 
   def createCollection(name: String, title: String, description: String, targetUser: String, targetDomain: String): Try[Unit] = {
@@ -169,11 +157,11 @@ trait Smithers2 {
       .flatMap(extractVideoRefFromPresentationForVideoId(id))
   }
 
-  private[springfield] def extractVideoRefFromPresentationForVideoId(index: String)(presentationXml: Elem): Try[String] = Try {
+  private[springfield] def extractVideoRefFromPresentationForVideoId(videoId: String)(presentationXml: Elem): Try[String] = Try {
     (presentationXml \\ "video")
-      .collectFirst { case node if (node \ "@id").text == index => (node \\ "@referid").text }
+      .collectFirst { case node if (node \ "@id").text == videoId => (node \\ "@referid").text }
       .map(relativizePathString)
-      .getOrElse(throw new IllegalStateException(s"No videoReference found for index '$index' in the presentation"))
+      .getOrElse(throw new IllegalStateException(s"No videoReference found for index '$videoId' in the presentation"))
   }
 
   private[springfield] def relativizePathString(path: String): String = {
@@ -197,14 +185,8 @@ trait Smithers2 {
       _ <- checkNameLength(videoName)
       _ = debug(s"Resolved to presentation referid: $presentationReferId")
       uri = path2Uri(presentationReferId.resolve("videoplaylist/1/video/").resolve(videoName).resolve("attributes"))
-      response <- http("PUT", uri,
-        <fsxml>
-          <attributes>
-            <referid>{ "/" + getCompletePath(videoReferId).toString }</referid>
-          </attributes>
-        </fsxml>.toString)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
+      body = createReferidEnvelope(videoReferId)
+      _ <- sendRequestAndCheckResponse(uri, "PUT", body)
     } yield ()
   }
 
@@ -215,15 +197,13 @@ trait Smithers2 {
       presentationReferId <- getPresentationReferIdPath(presentationPath)
       _ <- checkCollection(collection)
       _ <- checkNameLength(presentationName)
-      response <- http("PUT", uri,
-        <fsxml>
-          <attributes>
-            <referid>{ "/" + getCompletePath(presentationReferId).toString }</referid>
-          </attributes>
-        </fsxml>.toString)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
+      body = createReferidEnvelope(presentationReferId)
+      _ <- sendRequestAndCheckResponse(uri, "PUT", body)
     } yield ()
+  }
+
+  private def createReferidEnvelope(presentationReferId: Path): String = {
+    <fsxml><attributes><referid>{ "/" + getCompletePath(presentationReferId).toString }</referid></attributes></fsxml>.toString
   }
 
   def validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(presentationPath: Path, subtitles: List[Path]): Try[Unit] = {
@@ -244,6 +224,31 @@ trait Smithers2 {
     else Failure(new IllegalArgumentException(s"$videoReferId does not appear to be a video referid. Expected format: [domain/<d>/]user/<u>/video/<number>"))
   }
 
+  /**
+   * Checks if the provided path is wrapped in a collection or not. If it is wrapped the presentation will be extracted
+   * else it just returns the presentation as is.
+   *
+   * @param presentationReferId
+   * @return path to the presentation
+   */
+  def extractPresentationFromCollection(presentationReferId: Path): Try[Path] = {
+    if (isCollection(presentationReferId.subpath(0, presentationReferId.getNameCount - 2))) getXmlFromPath(presentationReferId)
+      .flatMap(xml => extractPresentationReferIdFromXML(xml, presentationReferId.getFileName.toString))
+    else Success(presentationReferId)
+  }
+
+  def extractPresentationReferIdFromXML(collectionXml: Elem, presentationName: String): Try[Path] = Try {
+    (collectionXml \\ "presentation")
+      .collectFirst { case e: Elem if (e \ "@id").text == presentationName => Paths.get((e \ "@referid").text) }
+      .getOrElse(throw new IllegalArgumentException(s"No presentation with name $presentationName"))
+  }
+
+  def extractVideoPlaylistIds(presentationXml: Elem): List[String] = {
+    (presentationXml \\ "videoplaylist")
+      .map(node => (node \ "@id").text)
+      .toList
+  }
+
   def getPresentationReferIdPath(presentation: Path): Try[Path] = {
     if (!isPresentationPath(presentation)) Failure(new IllegalArgumentException(s"$presentation does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"))
     else if (presentation.getFileName.toString.matches("\\d+")) Success(presentation)
@@ -262,9 +267,11 @@ trait Smithers2 {
   }
 
   def checkCollection(collection: Path): Try[Unit] = {
-    if (collection.getNameCount > 3 && collection.getName(collection.getNameCount - 2).toString == "collection") Success(())
+    if (isCollection(collection)) Success(())
     else Failure(new IllegalArgumentException(s"$collection does not appear to be a collection Springfield path. Expected format: [domain/<d>/]user/<u>/collection/<name>"))
   }
+
+  def isCollection(collection: Path): Boolean = collection.getNameCount > 3 && collection.getName(collection.getNameCount - 2).toString == "collection"
 
   def checkNameLength(name: String): Try[Unit] = {
     if (name.length <= MAX_NAME_LENGTH) Success(())
@@ -284,7 +291,7 @@ trait Smithers2 {
       Paths.get(smithers2BaseUri.getPath).resolve(getCompletePath(path)).toString, null, null)
   }
 
-  def http(method: String, uri: URI, body: String = null) = Try {
+  private def http(method: String, uri: URI, body: String = null) = Try {
     {
       if (body == null) Http(uri.toASCIIString)
       else Http(uri.toASCIIString).postData(body)
@@ -293,7 +300,15 @@ trait Smithers2 {
       .asBytes
   }
 
-  def checkResponseOk(content: Array[Byte]): Try[Elem] = {
+  def sendRequestAndCheckResponse(uri: URI, method: String, body: String = null): Try[Unit] = {
+    for {
+      response <- http(method, uri, body)
+      if response.code == 200
+      _ <- checkResponseOk(response.body)
+    } yield ()
+  }
+
+  private def checkResponseOk(content: Array[Byte]): Try[Elem] = {
     /*
      * Never mind about the status codes. Springfield only returns 200 :-/
      */
