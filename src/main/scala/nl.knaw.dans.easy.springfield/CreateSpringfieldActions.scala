@@ -68,7 +68,7 @@ trait CreateSpringfieldActions {
   }
 
   def createSpringfieldActions(videos: Seq[Video]): Try[Elem] = Try {
-    <actions>
+    <actions xmlns="http://easy.dans.knaw.nl/external/springfield-actions/">
       { createAddPresentations(videos) }
     </actions>
   }
