@@ -157,11 +157,11 @@ trait Smithers2 {
       .flatMap(extractVideoRefFromPresentationForVideoId(id))
   }
 
-  private[springfield] def extractVideoRefFromPresentationForVideoId(index: String)(presentationXml: Elem): Try[String] = Try {
+  private[springfield] def extractVideoRefFromPresentationForVideoId(videoId: String)(presentationXml: Elem): Try[String] = Try {
     (presentationXml \\ "video")
-      .collectFirst { case node if (node \ "@id").text == index => (node \\ "@referid").text }
+      .collectFirst { case node if (node \ "@id").text == videoId => (node \\ "@referid").text }
       .map(relativizePathString)
-      .getOrElse(throw new IllegalStateException(s"No videoReference found for index '$index' in the presentation"))
+      .getOrElse(throw new IllegalStateException(s"No videoReference found for index '$videoId' in the presentation"))
   }
 
   private[springfield] def relativizePathString(path: String): String = {

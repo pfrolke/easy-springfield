@@ -21,7 +21,7 @@ import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.util.{ Failure, Success, Try }
 
-trait setPlaymode extends DebugEnhancedLogging {
+trait SetPlaymode extends DebugEnhancedLogging {
   this: Smithers2 =>
 
   /**
@@ -47,9 +47,8 @@ trait setPlaymode extends DebugEnhancedLogging {
    *
    * @param videoPlayListInPresentationPath path to the playlist in the presentation
    * @param mode                            {menu|continuous} the to be played mode
-   * @return
    */
-  def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
+  private def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
     trace(videoPlayListInPresentationPath, mode)
     val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
     debug(s"Smithers2 URI: $uri")

@@ -37,7 +37,7 @@ object Command extends App
   with GetProgressOfCurrentJobs
   with CreateSpringfieldActions
   with Ticket
-  with setPlaymode {
+  with SetPlaymode {
 
   import scala.language.reflectiveCalls
 
