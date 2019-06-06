@@ -232,12 +232,12 @@ trait Smithers2 {
    * @return path to the presentation
    */
   def extractPresentationFromCollection(presentationReferId: Path): Try[Path] = {
-    if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId)
-      .flatMap(xml => extractPresentationFromCollection(xml, presentationReferId.getFileName.toString))
+    if (isCollection(presentationReferId.subpath(0, presentationReferId.getNameCount - 2))) getXmlFromPath(presentationReferId)
+      .flatMap(xml => extractPresentationReferIdFromXML(xml, presentationReferId.getFileName.toString))
     else Success(presentationReferId)
   }
 
-  def extractPresentationFromCollection(collectionXml: Elem, presentationName: String): Try[Path] = Try {
+  def extractPresentationReferIdFromXML(collectionXml: Elem, presentationName: String): Try[Path] = Try {
     (collectionXml \\ "presentation")
       .collectFirst { case e: Elem if (e \ "@id").text == presentationName => Paths.get((e \ "@referid").text) }
       .getOrElse(throw new IllegalArgumentException(s"No presentation with name $presentationName"))

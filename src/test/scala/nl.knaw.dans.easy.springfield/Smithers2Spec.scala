@@ -33,8 +33,8 @@ class Smithers2Spec extends TestSupportFixture
   private val privateContinuousRefIdPath = "/domain/dans/user/utest/presentation/1"
   private val elem: Elem =
     <fsxml>
-        <presentation id="3">
-            <videoplaylist id="1">
+        <presentation id="3" referid="presentation/1">
+            <videoplaylist id="1" >
             <video id="1" referid="/domain/dans/user/utest/video/5">
             </video>
             <video id="2" referid="/domain/dans/user/utest/video/7">
@@ -58,6 +58,7 @@ class Smithers2Spec extends TestSupportFixture
           </presentation>
         </fsxml>
       case "3" => elem
+      case "test_presentation" =>  elem
       case _ => <empty/>
     }
   }
@@ -241,28 +242,41 @@ class Smithers2Spec extends TestSupportFixture
       .map(extractVideoPlaylistIds) shouldBe Success(List())
   }
 
-  "extractPresentationFromCollection" should "return the path to the presentation" in {
+  "extractPresentationReferIdFromXML" should "return the path to the presentation" in {
     getXmlFromPath(Paths.get("private_continuous"))
-      .flatMap(extractPresentationFromCollection(_, "private_continuous")) shouldBe Success(Paths.get("/domain/dans/user/utest/presentation/1"))
-  }
-
-  it should "succeed if the id is found but no referid is found" in {
-    getXmlFromPath(Paths.get("3"))
-      .flatMap(extractPresentationFromCollection(_, "3")) shouldBe Success(Paths.get(""))
+      .flatMap(extractPresentationReferIdFromXML(_, "private_continuous")) shouldBe Success(Paths.get("/domain/dans/user/utest/presentation/1"))
   }
 
   it should "fail if no xml is found" in {
     getXmlFromPath(Paths.get("9"))
-      .flatMap(extractPresentationFromCollection(_, "3")) should matchPattern {
-      case Failure(iae: IllegalArgumentException)  if iae.getMessage == "No presentation with name 3" =>
+      .flatMap(extractPresentationReferIdFromXML(_, "3")) should matchPattern {
+      case Failure(iae: IllegalArgumentException) if iae.getMessage == "No presentation with name 3" =>
     }
   }
 
   it should "fail if the id is not found" in {
     getXmlFromPath(Paths.get("3"))
-      .flatMap(extractPresentationFromCollection(_, "9")) should matchPattern {
-      case Failure(iae: IllegalArgumentException)  if iae.getMessage == "No presentation with name 9" =>
+      .flatMap(extractPresentationReferIdFromXML(_, "9")) should matchPattern {
+      case Failure(iae: IllegalArgumentException) if iae.getMessage == "No presentation with name 9" =>
     }
+  }
+
+  "extractPresentationFromCollection" should "return the path to the presentation if it is not wrapped in a collection" in {
+    val aDirectPresentationPath = Paths.get("domain/dans/user/user001/presentation/a_very_good_presentation")
+    extractPresentationFromCollection(aDirectPresentationPath) shouldBe Success(aDirectPresentationPath)
+  }
+
+  "isCollection" should "true if the path is a collection" in {
+    isCollection(Paths.get("domain/dans/user/user001/collection/c001")) shouldBe true
+  }
+
+  it should "return false if it is not  collection" in {
+    isCollection(Paths.get("domain/dans/user/user001/collection/c001/longer/path")) shouldBe false
+  }
+
+  it should "return the referid if the presentation is wrapped in a collection" in {
+    val presentationWrappedInCollection = Paths.get("domain/dans/user/user001/collection/c001/presentation/3")
+    extractPresentationFromCollection(presentationWrappedInCollection) shouldBe Success(Paths.get("presentation/1"))
   }
 
   private def createExceptionMessage(path: String): String = s"$path does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"
