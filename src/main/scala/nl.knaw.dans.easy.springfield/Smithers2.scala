@@ -75,21 +75,6 @@ trait Smithers2 {
   }
 
   /**
-   * Sets the playmode for playlist in a presentation. The path must point to the
-   * actual playlist resource.
-   *
-   * @param videoPlayListInPresentationPath path to the playlist in the presentation
-   * @param mode                            {menu|continuous} the to be played mode
-   * @return
-   */
-  def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
-    trace(videoPlayListInPresentationPath, mode)
-    val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
-    debug(s"Smithers2 URI: $uri")
-    sendRequestAndCheckResponse(uri, "PUT", mode)
-  }
-
-  /**
    * Attempts to delete the item at `path`
    *
    * @param path the Springfield path of the item to delete
@@ -240,31 +225,16 @@ trait Smithers2 {
   }
 
   /**
-   * First checks if the provided path is a presentation or a presentation in collection. If it is the latter it will first attempt to
-   * retrieve the referid to the presentation. It will than extract the playlist id('s) and assign the desired values to the playmode(s).
+   * Checks if the provided path is wrapped in a collection or not. If it is wrapped the presentation will be extracted
+   * else it just returns the presentation as is.
    *
-   * @param presentationReferId path to the presentation
-   * @param mode                string value of the desired playmode
-   * @return Success if the operation succeeded, failure otherwise
+   * @param presentationReferId
+   * @return path to the presentation
    */
-  def setPlayModeForPresentation(presentationReferId: Path, mode: String): Try[Unit] = {
-    for {
-      referId <- extractPresentationFromCollection(presentationReferId)
-      xml <- getXmlFromPath(referId)
-      ids = extractVideoPlaylistIds(xml)
-      _ <- setPlayModeForPlayLists(referId, mode, ids)
-    } yield ()
-  }
-
-  private def extractPresentationFromCollection(presentationReferId: Path): Try[Path] = {
+  def extractPresentationFromCollection(presentationReferId: Path): Try[Path] = {
     if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId)
       .flatMap(xml => extractPresentationFromCollection(xml, presentationReferId.getFileName.toString))
     else Success(presentationReferId)
-  }
-
-  private def setPlayModeForPlayLists(referId: Path, mode: String, ids: List[String]): Try[Unit] = {
-    ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
-      .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
   }
 
   def extractPresentationFromCollection(collectionXml: Elem, presentationName: String): Try[Path] = Try {
@@ -321,7 +291,7 @@ trait Smithers2 {
       Paths.get(smithers2BaseUri.getPath).resolve(getCompletePath(path)).toString, null, null)
   }
 
-  def http(method: String, uri: URI, body: String = null) = Try {
+  private def http(method: String, uri: URI, body: String = null) = Try {
     {
       if (body == null) Http(uri.toASCIIString)
       else Http(uri.toASCIIString).postData(body)
@@ -330,7 +300,7 @@ trait Smithers2 {
       .asBytes
   }
 
-  private def sendRequestAndCheckResponse(uri: URI, method: String, body: String = null): Try[Unit] = {
+  def sendRequestAndCheckResponse(uri: URI, method: String, body: String = null): Try[Unit] = {
     for {
       response <- http(method, uri, body)
       if response.code == 200
@@ -338,7 +308,7 @@ trait Smithers2 {
     } yield ()
   }
 
-  def checkResponseOk(content: Array[Byte]): Try[Elem] = {
+  private def checkResponseOk(content: Array[Byte]): Try[Elem] = {
     /*
      * Never mind about the status codes. Springfield only returns 200 :-/
      */
