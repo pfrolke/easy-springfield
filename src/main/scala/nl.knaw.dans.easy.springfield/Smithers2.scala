@@ -249,14 +249,22 @@ trait Smithers2 {
    */
   def setPlayModeForPresentation(presentationReferId: Path, mode: String): Try[Unit] = {
     for {
-      referId <- if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId)
-        .flatMap(xml => extractPresentationFromCollection(xml, presentationReferId.getFileName.toString))
-                 else Success(presentationReferId)
+      referId <- extractPresentationFromCollection(presentationReferId)
       xml <- getXmlFromPath(referId)
       ids = extractVideoPlaylistIds(xml)
-      _ <- ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
-        .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
+      _ <- setPlayModeForPlayLists(referId, mode, ids)
     } yield ()
+  }
+
+  private def extractPresentationFromCollection(presentationReferId: Path): Try[Path] = {
+    if (isCollection(presentationReferId)) getXmlFromPath(presentationReferId)
+      .flatMap(xml => extractPresentationFromCollection(xml, presentationReferId.getFileName.toString))
+    else Success(presentationReferId)
+  }
+
+  private def setPlayModeForPlayLists(referId: Path, mode: String, ids: List[String]): Try[Unit] = {
+    ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
+      .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
   }
 
   def extractPresentationFromCollection(collectionXml: Elem, presentationName: String): Try[Path] = Try {
