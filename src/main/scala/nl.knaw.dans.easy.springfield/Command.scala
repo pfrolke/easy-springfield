@@ -19,8 +19,10 @@ import java.nio.file.{ Path, Paths }
 import java.util.UUID
 
 import nl.knaw.dans.easy.springfield.AvType._
+import nl.knaw.dans.easy.springfield.Playmode.Playmode
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.rogach.scallop.Subcommand
 
 import scala.io.StdIn
 import scala.util.{ Failure, Success, Try }
@@ -118,7 +120,8 @@ object Command extends App
         _ <- checkPathIsRelative(cmd.path())
         completePath = getCompletePath(cmd.path())
         presentationReferId <- getPresentationReferIdPath(completePath)
-        _ <- setPlayModeForPresentation(presentationReferId, cmd.mode())
+        playmode <- toPlayMode(cmd.mode())
+        _ <- setPlayModeForPresentation(presentationReferId, playmode)
       } yield "Play mode added or changed."
 
     case Some(cmd @ opts.createTicket) =>
@@ -167,6 +170,13 @@ object Command extends App
       println(config.languages.mkString("\n"))
       Success("Finished printing supported language codes.")
     case _ => Failure(new IllegalArgumentException("Enter a valid subcommand"))
+  }
+
+  private def toPlayMode(mode: String): Try[Playmode] = Try {
+    Playmode.
+      values
+      .find(_.toString == mode)
+      .getOrElse(throw new IllegalArgumentException(s"playmode `$mode` not one of ${ Playmode.values }"))
   }
 
   result.map(msg => Console.err.println(s"OK: $msg"))

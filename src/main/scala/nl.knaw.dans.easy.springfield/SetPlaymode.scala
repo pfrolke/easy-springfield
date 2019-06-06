@@ -17,6 +17,7 @@ package nl.knaw.dans.easy.springfield
 
 import java.nio.file.Path
 
+import nl.knaw.dans.easy.springfield.Playmode.Playmode
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
 import scala.util.{ Failure, Success, Try }
@@ -32,7 +33,7 @@ trait SetPlaymode extends DebugEnhancedLogging {
    * @param mode                string value of the desired playmode
    * @return Success if the operation succeeded, failure otherwise
    */
-  def setPlayModeForPresentation(presentationReferId: Path, mode: String): Try[Unit] = {
+  def setPlayModeForPresentation(presentationReferId: Path, mode: Playmode): Try[Unit] = {
     for {
       referId <- extractPresentationFromCollection(presentationReferId)
       xml <- getXmlFromPath(referId)
@@ -48,14 +49,14 @@ trait SetPlaymode extends DebugEnhancedLogging {
    * @param videoPlayListInPresentationPath path to the playlist in the presentation
    * @param mode                            {menu|continuous} the to be played mode
    */
-  private def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: String): Try[Unit] = {
+  private def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: Playmode): Try[Unit] = {
     trace(videoPlayListInPresentationPath, mode)
     val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
     debug(s"Smithers2 URI: $uri")
-    sendRequestAndCheckResponse(uri, "PUT", mode)
+    sendRequestAndCheckResponse(uri, "PUT", mode.toString)
   }
 
-  private def setPlayModeForPlayLists(referId: Path, mode: String, ids: List[String]): Try[Unit] = {
+  private def setPlayModeForPlayLists(referId: Path, mode: Playmode, ids: List[String]): Try[Unit] = {
     ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
       .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
   }

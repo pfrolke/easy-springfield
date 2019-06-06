@@ -24,4 +24,9 @@ package object springfield {
     type AvType = Value
     val audio, video = Value
   }
+
+  object Playmode extends Enumeration {
+    type Playmode = Value
+    val menu, continuous = Value
+  }
 }
