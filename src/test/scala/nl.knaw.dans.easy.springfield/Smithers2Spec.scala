@@ -279,5 +279,12 @@ class Smithers2Spec extends TestSupportFixture
     extractPresentationFromCollection(presentationWrappedInCollection) shouldBe Success(Paths.get("presentation/1"))
   }
 
+  it should "fail if the referid cannot be found in the collection xml" in {
+    val nonExistingPresentationIdPAth = Paths.get("domain/dans/user/user001/collection/c001/presentation/test_presentation")
+    extractPresentationFromCollection(nonExistingPresentationIdPAth) should matchPattern {
+      case Failure(iae: IllegalArgumentException) if iae.getMessage == "No presentation with name test_presentation" =>
+    }
+  }
+
   private def createExceptionMessage(path: String): String = s"$path does not appear to be a presentation referid or Springfield path. Expected format: [domain/<d>/]user/<u>/presentation/<number> OR [domain/<d>/]user/<u>/collection/<c>/presentation/<p>"
 }
