@@ -56,7 +56,7 @@ trait SetPlaymode extends DebugEnhancedLogging {
     sendRequestAndCheckResponse(uri, "PUT", mode.toString)
   }
 
-  private def setPlayModeForPlayLists(referId: Path, mode: Playmode, ids: List[String]): Try[Unit] = {
+  private def setPlayModeForPlayLists(referId: Path, mode: Playmode, ids: Seq[String]): Try[Unit] = {
     ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
       .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
   }

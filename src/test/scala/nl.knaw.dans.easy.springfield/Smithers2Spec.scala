@@ -70,14 +70,14 @@ class Smithers2Spec extends TestSupportFixture
 
   it should "fail if a non existing index is given" in {
     extractVideoRefFromPresentationForVideoId("3")(elem) should matchPattern {
-      case Failure(i: IllegalStateException) if i.getMessage == "No videoReference found for index '3' in the presentation" =>
+      case Failure(i: IllegalStateException) if i.getMessage == "No videoReference found for id '3' in the presentation" =>
     }
   }
 
   it should "fail if a malformed xml-elem is provided" in {
     val malFormedElem = <mal><formed><elem></elem></formed></mal>
     extractVideoRefFromPresentationForVideoId("1")(malFormedElem) should matchPattern {
-      case Failure(i: IllegalStateException) if i.getMessage == "No videoReference found for index '1' in the presentation" =>
+      case Failure(i: IllegalStateException) if i.getMessage == "No videoReference found for id '1' in the presentation" =>
     }
   }
 

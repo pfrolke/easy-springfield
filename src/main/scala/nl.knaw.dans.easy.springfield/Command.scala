@@ -24,8 +24,8 @@ import nl.knaw.dans.easy.springfield.AvType._
 import nl.knaw.dans.easy.springfield.Playmode.Playmode
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import org.apache.commons.lang.BooleanUtils
 import resource.managed
-import org.rogach.scallop.Subcommand
 
 import scala.io.StdIn
 import scala.util.{ Failure, Success, Try }
@@ -42,6 +42,7 @@ object Command extends App
   with GetProgressOfCurrentJobs
   with CreateSpringfieldActions
   with Ticket
+  with SetTitle
   with SetPlaymode {
 
   import scala.language.reflectiveCalls
@@ -116,8 +117,16 @@ object Command extends App
              |
              |(Note that you may have to clear your browser cache after making audio/video files private to effectively test the result.)
            """.stripMargin)
-        _ <- avFiles.map(setRequireTicket(_, cmd.requireTicket().toBoolean)).collectResults
+        avFilesSetRequireTicketPath = avFiles.map(_.resolve("properties").resolve("private"))
+        _ <- avFilesSetRequireTicketPath.map(setProperty(_, BooleanUtils.toBoolean(cmd.requireTicket()).toString)).collectResults
       } yield s"Video(s) set to require-ticket = ${ cmd.requireTicket() }"
+    case Some(cmd @ opts.setTitle) =>
+      for {
+        _ <- checkPathIsRelative(cmd.presentation())
+        completePath = getCompletePath(cmd.presentation())
+        presentationRefId <- getPresentationReferIdPath(completePath)
+        _ <- setTitle(cmd.videoNumber(), cmd.title(), presentationRefId)
+      } yield "Title set"
     case Some(cmd @ opts.setPlayMode) =>
       for {
         _ <- checkPathIsRelative(cmd.path())

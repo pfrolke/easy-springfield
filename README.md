@@ -11,16 +11,17 @@ SYNOPSIS
     easy-springfield list-collections <user> [<domain>]
     easy-springfield create-user <user> [<domain>]
     easy-springfield create-collection [-t, --title <arg>] [-d, --description <arg>] \
-      <collection> <user> [<domain>]
+        <collection> <user> [<domain>]
     easy-springfield create-presentation [-t, --title <arg>] [-d, --description <arg>] \
-      [-r, --require-ticket] <user> [<domain>]
+        [-r, --require-ticket] <user> [<domain>]
     easy-springfield create-springfield-actions [-c, --check-parent-items] [-v, --videos-folder <arg>] \
-      <videos-csv> > springfield-actions.xml
+        <videos-csv> > springfield-actions.xml
     easy-springfield status [-u, --user <arg>][-d, --domain <arg>]
     easy-springfield set-require-ticket <springfield-path> {true|false}
+    easy-springfield set-title --title,-t <title> --video-number,-v <number> <springfield-presentation-path>
     easy-springfield set-play-mode <springfield-presentation-path> {menu|continuous}
     easy-springfield create-ticket [-e,--expires-after-seconds <arg>] [-t, --ticket <arg>] \
-      <springfield-path>
+        <springfield-path>
     easy-springfield delete-ticket <ticket>
     easy-springfield delete [-r, --with-referenced-items] <springfield-path>
     easy-springfield add-videoref-to-presentation <video> <name> <presentation>
@@ -28,8 +29,6 @@ SYNOPSIS
     easy-springfield add-subtitles-to-video --language <code> <video> <web-vtt-file>
     easy-springfield add-subtitles-to-presentation --language <code> <presentation> <web-vtt-file>...
     easy-springfield show-available-language-codes
-
-Note:  `add-subtitles-to-video` and `add-subtitles-to-presentation` are still to be implememented.
 
 DESCRIPTION
 -----------
@@ -302,6 +301,18 @@ ARGUMENTS
           require-ticket (required)     true or false: whether to require a ticket
                                         before playing the presentation (private
                                         audio/video) or not (public audio/video)
+        ---
+        
+        Subcommand: set-title - Sets the title of a video/audio within a presentation. The springfield-presentation-path must be either a direct presentation referid
+         or full path that can be resolved to a presentation.
+          -t, --title  <arg>          The (new) name of the video/audio element with a
+                                      presentation
+          -v, --video-number  <arg>   The number/ index of the video within the
+                                      presentation (default = 1)
+          -h, --help                  Show help message
+        
+         trailing arguments:
+          presentation (required)   referid of the presentation
         ---
         
         Subcommand: set-play-mode - Sets the play-mode property of the presentation as specified. The springfield-presentation-path
