@@ -37,26 +37,19 @@ trait Smithers2 {
     trace(path)
     val uri = path2Uri(path)
     debug(s"Smithers2 URI: $uri")
-    for {
-      response <- http("GET", uri)
-      if response.code == 200
-      xml <- checkResponseOk(response.body)
-    } yield xml
+    sendRequestAndCheckResponse(uri, "GET")
   }
 
   def checkPathExists(path: Path): Try[(Path, Boolean)] = {
     trace(path)
     val uri = path2Uri(path)
     debug(s"Smithers2 URI: $uri")
-    val result = for {
-      response <- http("GET", uri)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
-    } yield (path, true)
-    result.recoverWith {
-      case SpringfieldErrorException(errorCode, _, _) if errorCode == 404 => Success((path, false))
-      case e => Failure(e)
-    }
+    sendRequestAndCheckResponse(uri, "GET")
+      .map(_ => (path, true))
+      .recoverWith {
+        case SpringfieldErrorException(errorCode, _, _) if errorCode == 404 => Success((path, false))
+        case e => Failure(e)
+      }
   }
 
   /**
@@ -67,7 +60,7 @@ trait Smithers2 {
    * @param propertyValue value of the property
    * @return
    */
-  def setProperty(propertyPath: Path, propertyValue: String): Try[Unit] = {
+  def setProperty(propertyPath: Path, propertyValue: String): Try[Elem] = {
     trace(propertyPath, propertyValue)
     val uri = path2Uri(propertyPath)
     debug(s"Smithers2 URI: $uri")
@@ -80,63 +73,52 @@ trait Smithers2 {
    * @param path the Springfield path of the item to delete
    * @return Success if the item was deleted, Failure with an error message otherwise
    */
-  def deletePath(path: Path): Try[Unit] = {
+  def deletePath(path: Path): Try[Elem] = {
     trace(path)
     val uri = path2Uri(path)
     debug(s"Smithers2 URI: $uri")
     sendRequestAndCheckResponse(uri, "DELETE")
   }
 
-  def createUser(user: String, targetDomain: String): Try[Unit] = {
+  def createUser(user: String, targetDomain: String): Try[Elem] = {
     trace(user, targetDomain)
     val uri = path2Uri(Paths.get("domain", targetDomain, "user", user, "properties"))
     debug(s"Smithers2 URI: $uri")
     sendRequestAndCheckResponse(uri, "PUT", <fsxml><properties/></fsxml>.toString)
   }
 
-  def createCollection(name: String, title: String, description: String, targetUser: String, targetDomain: String): Try[Unit] = {
+  def createCollection(name: String, title: String, description: String, targetUser: String, targetDomain: String): Try[Elem] = {
     trace(name, title, description, targetUser, targetDomain)
     val uri = path2Uri(Paths.get("domain", targetDomain, "user", targetUser, "collection", name, "properties"))
     debug(s"Smithers2 URI: $uri")
-    sendRequestAndCheckResponse(uri, "PUT",
-      <fsxml>
+    val xml = <fsxml>
           <properties>
             <title>{ title }</title>
             <description>{ description }</description>
           </properties>
-        </fsxml>.toString)
+        </fsxml>.toString
+    sendRequestAndCheckResponse(uri, "PUT", xml)
   }
 
   def createPresentation(title: String, description: String, isPrivate: Boolean, targetUser: String, targetDomain: String): Try[String] = {
     trace(title, description, targetUser, targetDomain)
     val uri = path2Uri(Paths.get("domain", targetDomain, "user", targetUser, "presentation"))
-    for {
-      response <- http("POST", uri,
-        <fsxml>
+    val xml = <fsxml>
           <properties>
             <title>{ title }</title>
             <description>{ description }</description>
           </properties>
           <videoplaylist id="1"><properties><private>{ isPrivate }</private></properties></videoplaylist>
-        </fsxml>.toString)
-      if response.code == 200
-      xml <- checkResponseOk(response.body)
-      _ = debug(s"Return xml = ${ xml.toString }")
-      referId <- Try { xml \ "properties" \ "uri" }
-    } yield referId.head.text
+        </fsxml>.toString
+
+    sendRequestAndCheckResponse(uri, "POST", xml)
+      .flatMap(xml =>  Try((xml \  "properties" \ "uri").head.text))
   }
 
   def getReferencedPaths(path: Path): Try[Seq[Path]] = {
     getXmlFromPath(path)
-      .map(_ \\ "@referid")
-      .map {
-        _.map {
-          n =>
-            if (n.text.startsWith("/")) n.text.substring(1)
-            else n.text
-        }
-          .map(Paths.get(_))
-      }
+      .map(node => (node \\ "@referid")
+        .map(iNode => relativizePathStringToPath(iNode.text)))
       .map {
         paths =>
           paths.map(getReferencedPaths).collectResults.map {
@@ -165,7 +147,9 @@ trait Smithers2 {
     else path
   }
 
-  def putSubtitlesToVideo(videoRefId: Path, languageCode: String, fileName: String): Try[Unit] = {
+  private[springfield] def relativizePathStringToPath(path: String): Path = Paths.get(relativizePathString(path))
+
+  def putSubtitlesToVideo(videoRefId: Path, languageCode: String, fileName: String): Try[Elem] = {
     val uri = path2Uri(videoRefId.resolve("properties").resolve(s"webvtt_$languageCode"))
     debug(s"Smithers2 URI: $uri fileName: $fileName languageCode: $languageCode")
     sendRequestAndCheckResponse(uri, "PUT", fileName)
@@ -196,20 +180,33 @@ trait Smithers2 {
   }
 
   private def createReferidEnvelope(presentationReferId: Path): String = {
-    <fsxml><attributes><referid>{ "/" + getCompletePath(presentationReferId).toString }</referid></attributes></fsxml>.toString
+    <fsxml>
+      <attributes>
+        <referid>{ "/" + getCompletePath(presentationReferId).toString }</referid>
+      </attributes>
+    </fsxml>.toString
   }
 
-  def validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(presentationPath: Path, subtitles: List[Path]): Try[Unit] = {
+  def validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(videos: List[String], subtitles: List[Path]): Try[Unit] = {
+    if (videos.length == subtitles.size) Success(())
+    else Failure(new IllegalArgumentException(s"The provided number of subtitles '${ subtitles.size }' did not match the number of videos in the presentation '${ videos.length }'"))
+  }
+
+  def zipVideoPathsWithIds(paths: List[Path], ids: List[String]): List[VideoPathWithId] = {
+    (paths, ids)
+      .zipped.toList
+      .map(tuple => VideoPathWithId(tuple._1, tuple._2))
+  }
+
+  private def getVideoIds(presentationXml: Elem): List[String] = {
+    (presentationXml \\ "videoplaylist" \\ "video")
+      .collect { case node if node.attribute("id").isDefined => String.valueOf(node.attribute("id").get) }
+      .toList
+  }
+
+  def getVideoIdsForPresentation(presentationPath: Path): Try[List[String]] = {
     getXmlFromPath(presentationPath)
-      .map(getNumberOfVideos)
-      .flatMap {
-        case numberInXml: Int if numberInXml == subtitles.size => Success(())
-        case numberInXml: Int => Failure(new IllegalArgumentException(s"The provided number of subtitles '${ subtitles.size }' did not match the number of videos in the presentation '$numberInXml'"))
-      }
-  }
-
-  def getNumberOfVideos(presentationXml: Elem): Int = {
-    (presentationXml \\ "videoplaylist" \\ "video").length
+      .map(getVideoIds)
   }
 
   def checkVideoReferId(videoReferId: Path): Try[Unit] = {
@@ -292,12 +289,10 @@ trait Smithers2 {
       .asBytes
   }
 
-  def sendRequestAndCheckResponse(uri: URI, method: String, body: String = null): Try[Unit] = {
-    for {
-      response <- http(method, uri, body)
-      if response.code == 200
-      _ <- checkResponseOk(response.body)
-    } yield ()
+  private def sendRequestAndCheckResponse(uri: URI, method: String, body: String = null): Try[Elem] = {
+    http(method, uri, body)
+      .flatMap(response => if (response.code == 200) checkResponseOk(response.body)
+                           else Failure(new RuntimeException(s"received non 2xx code from Smithers: ${ response.code } with message: ${ new String(response.body) }")))
   }
 
   private def checkResponseOk(content: Array[Byte]): Try[Elem] = {

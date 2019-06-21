@@ -64,17 +64,17 @@ trait AddSubtitles extends DebugEnhancedLogging {
    * @param subtitles    a list of paths to the to be added subtitles files
    * @return
    */
-  def addSubtitlesToPresentation(videoNumber: Int, language: String, presentation: Path, subtitles: List[Path]): Try[Unit] = {
-    subtitles match {
+  def addSubtitlesToPresentation(language: String, presentation: Path, subtitlesWithVideoIds: List[VideoPathWithId]): Try[Unit] = {
+    subtitlesWithVideoIds match {
       case Nil => Success(())
       case head :: tail =>
-        val relativePathToVideoProps = s"videoplaylist/1/video/$videoNumber"
+        val relativePathToVideoProps = s"videoplaylist/1/video/${ head.id }"
         val pathToPresentation = presentation.resolve(relativePathToVideoProps)
         for {
-          videoRef <- getVideoRefIdForVideoInPresentation(presentation, String.valueOf(videoNumber))
-          _ <- addSubtitlesToVideo(head, Paths.get(videoRef), language) // first add the subtitles to the video, before adding it to the presentation
+          videoRef <- getVideoRefIdForVideoInPresentation(presentation, head.id)
+          _ <- addSubtitlesToVideo(head.path, Paths.get(videoRef), language) // first add the subtitles to the video, before adding it to the presentation
           _ = debug(s"added '$head' to presentation '$pathToPresentation'")
-          _ <- addSubtitlesToPresentation(videoNumber + 1, language, presentation, tail)
+          _ <- addSubtitlesToPresentation(language, presentation, tail)
         } yield ()
     }
   }

@@ -39,6 +39,8 @@ class Smithers2Spec extends TestSupportFixture
             </video>
             <video id="2" referid="/domain/dans/user/utest/video/7">
             </video>
+              <video id="id that contains words" referid="/domain/dans/user/utest/video/7">
+            </video>
           </videoplaylist>
           <videoplaylist id="some_playlist_id">
             </videoplaylist>
@@ -204,32 +206,43 @@ class Smithers2Spec extends TestSupportFixture
     getCompletePath(completePath) shouldBe completePath
   }
 
-  "getNumberOfVideos" should "return the number of videos" in {
-    getNumberOfVideos(elem) shouldBe 2
+  "zipVideoPathsWithIds" should "should return an empty list if no video id's are given" in {
+    zipVideoPathsWithIds(List(Paths.get("domain/dans/user/utest/presentation/1")), List()) shouldBe List()
   }
 
-  it should "return 0 if there are no videos present" in {
-    getNumberOfVideos(<empty/>) shouldBe 0
+  it should "discard excessive ids" in {
+    zipVideoPathsWithIds(List(Paths.get("domain/dans/user/utest/presentation/3")), List("1", "2")) shouldBe List(VideoPathWithId(Paths.get("domain/dans/user/utest/presentation/3"), "1"))
   }
 
-  "validateNumberOfVideosIsSameAsNumberOfSubtitles" should "succeed if the number of subtitles '0' is equal to the number of videos in the presentation '0'" in {
-    validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(Paths.get("domain/dans/user/utest/presentation/1"), List()) shouldBe a[Success[_]]
+  it should "return a list of tuples if an even number of paths and ids is provided" in {
+    zipVideoPathsWithIds(List(Paths.get("domain/dans/user/utest/presentation/1"), Paths.get("domain/dans/user/utest/presentation/2")), List("1", "2")) shouldBe List(
+      VideoPathWithId(Paths.get("domain/dans/user/utest/presentation/1"), "1"),
+      VideoPathWithId(Paths.get("domain/dans/user/utest/presentation/2"), "2")
+    )
   }
 
-  it should "succeed if the number of subtitles '2' is equal to the number of videos in the presentation '2'" in {
-    validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(Paths.get("domain/dans/user/utest/presentation/3"), List(Paths.get("1"), Paths.get("2"))) shouldBe a[Success[_]]
+  "validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles" should "should return a Success if both list have the same length" in {
+    validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles( List("1"), List(Paths.get("1"))) shouldBe a[Success[_]]
   }
 
-  it should "fail if the number of subtitles '2' is not equal to number of videos in the presentation '0'" in {
-    validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(Paths.get("domain/dans/user/utest/presentation/1"), List(Paths.get("1"), Paths.get("2"))) should matchPattern {
-      case Failure(e: IllegalArgumentException) if e.getMessage == "The provided number of subtitles '2' did not match the number of videos in the presentation '0'" =>
+  it should "fail if there are more ids than paths" in {
+    validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(List("1", "2"), List(Paths.get("1"))) should matchPattern {
+      case Failure(e: IllegalArgumentException) if e.getMessage == "The provided number of subtitles '1' did not match the number of videos in the presentation '2'" =>
     }
   }
 
-  it should "fail if the number of subtitles '0' is not equal to number of videos in the presentation '2'" in {
-    validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(Paths.get("domain/dans/user/utest/presentation/3"), List()) should matchPattern {
-      case Failure(e: IllegalArgumentException) if e.getMessage == "The provided number of subtitles '0' did not match the number of videos in the presentation '2'" =>
+    it should "fail if there are more paths than ids" in {
+      validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(List("1"), List(Paths.get("1"), Paths.get("2"))) should matchPattern {
+        case Failure(e: IllegalArgumentException) if e.getMessage == "The provided number of subtitles '2' did not match the number of videos in the presentation '1'" =>
+      }
     }
+
+  "getVideoIdsForPresentation" should "return a list with the ids as String" in {
+    getVideoIdsForPresentation(Paths.get("3")) shouldBe Success(List("1", "2", "id that contains words"))
+  }
+
+  it should "return return an empty list if the presentation has no videos" in {
+    getVideoIdsForPresentation(Paths.get("private_continuous")) shouldBe Success(List())
   }
 
   "extractVideoPlaylistIds" should "return the ids of the playlists in the presentation" in {

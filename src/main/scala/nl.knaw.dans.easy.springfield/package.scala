@@ -15,8 +15,11 @@
  */
 package nl.knaw.dans.easy
 
+import java.nio.file.Path
+
 package object springfield {
   case class SpringfieldErrorException(errorCode: Int, message: String, details: String) extends Exception(s"($errorCode) $message: $details")
+  case class VideoPathWithId(path: Path, id: String)
 
   val MAX_NAME_LENGTH = 100
 

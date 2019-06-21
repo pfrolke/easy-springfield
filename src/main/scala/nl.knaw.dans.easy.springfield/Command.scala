@@ -175,8 +175,10 @@ object Command extends App
         _ <- checkPathIsRelative(cmd.presentation())
         completePath = getCompletePath(cmd.presentation())
         presentationRefId <- getPresentationReferIdPath(completePath)
-        _ <- validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(presentationRefId, cmd.subtitles())
-        _ <- addSubtitlesToPresentation(1, cmd.languageCode(), presentationRefId, cmd.subtitles())
+        videos <- getVideoIdsForPresentation(presentationRefId)
+        _ <- validateNumberOfVideosInPresentationIsEqualToNumberOfSubtitles(videos, cmd.subtitles())
+        videoPathsWithIds = zipVideoPathsWithIds(cmd.subtitles(), videos)
+        _ <- addSubtitlesToPresentation(cmd.languageCode(), presentationRefId, videoPathsWithIds)
       } yield "Subtitles added to presentation"
     case Some(cmd @ opts.showAvailableLanguageCodes) =>
       println(config.languages.mkString("\n"))

@@ -46,18 +46,13 @@ trait SetPlaymode extends DebugEnhancedLogging {
    * Sets the playmode for playlist in a presentation. The path must point to the
    * actual playlist resource.
    *
-   * @param videoPlayListInPresentationPath path to the playlist in the presentation
-   * @param mode                            {menu|continuous} the to be played mode
+   * @param referId path to the playlist in the presentation
+   * @param mode    {menu|continuous} the to be played mode
    */
-  private def setPlayModeForVideoPlayListInPresentation(videoPlayListInPresentationPath: Path, mode: Playmode): Try[Unit] = {
-    trace(videoPlayListInPresentationPath, mode)
-    val uri = path2Uri(videoPlayListInPresentationPath.resolve("properties").resolve("play-mode"))
-    debug(s"Smithers2 URI: $uri")
-    sendRequestAndCheckResponse(uri, "PUT", mode.toString)
-  }
-
   private def setPlayModeForPlayLists(referId: Path, mode: Playmode, ids: Seq[String]): Try[Unit] = {
-    ids.map(id => setPlayModeForVideoPlayListInPresentation(referId.resolve(s"videoplaylist").resolve(id), mode))
-      .collectFirst { case f @ Failure(_) => f }.getOrElse(Success(()))
+    ids
+      .map(id => setProperty(referId.resolve(s"videoplaylist").resolve(id).resolve("properties").resolve("play-mode"), mode.toString))
+      .collectFirst { case Failure(exception) => Failure(new IllegalStateException(exception.getMessage)) }
+      .getOrElse(Success(()))
   }
 }
