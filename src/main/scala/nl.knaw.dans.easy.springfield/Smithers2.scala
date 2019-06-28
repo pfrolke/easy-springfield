@@ -56,7 +56,7 @@ trait Smithers2 {
    * Sets or clears a property on the specified audio/video file. The path must point to the
    * actual audio/video resource, not to a reference to the audio/video
    *
-   * @param avFile        path to the audio/video property that needs to be changed
+   * @param propertyPath  path to the audio/video property that needs to be changed
    * @param propertyValue value of the property
    * @return
    */
@@ -159,9 +159,11 @@ trait Smithers2 {
     for {
       _ <- checkVideoReferId(videoReferId)
       presentationReferId <- getPresentationReferIdPath(presentation)
+      relPresentationReferId = Paths.get("/").relativize(presentationReferId) // Strip the leading slash
       _ <- checkNameLength(videoName)
       _ = debug(s"Resolved to presentation referid: $presentationReferId")
-      uri = path2Uri(presentationReferId.resolve("videoplaylist/1/video/").resolve(videoName).resolve("attributes"))
+      uri = path2Uri(relPresentationReferId.resolve("videoplaylist/1/video/").resolve(videoName).resolve("attributes"))
+      _ = debug(s"URI = $uri")
       body = createReferidEnvelope(videoReferId)
       _ <- sendRequestAndCheckResponse(uri, "PUT", body)
     } yield ()
