@@ -1,0 +1,1065 @@
+
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-dans-4.4.1">
+    
+    
+      
+        <title>easy-springfield</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/application.27a306a7.css">
+      
+      
+    
+    
+      <script src="assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,700|Glegoo:300,400,400i,700|Ubuntu+Mono&display=swap">
+        <style>.body-type,body,input{font-family:"Open Sans",sans-serif}.head-type,h1,h2,h3,h4,h5{font-family:"Glegoo",serif}.code-type,code,kbd,pre{font-family:"Ubuntu Mono",monospace}</style>
+      
+    
+    <link rel="stylesheet" href="assets/fonts/material-icons.css">
+    
+    
+    
+      
+    
+    
+  </head>
+  
+    <body dir="ltr">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#manual" tabindex="1" class="md-skip">
+        Skip to content
+      </a>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://dans.knaw.nl/en" title="Data Archiving and Networked Services (DANS)" class="md-header-nav__button md-logo">
+          <img src="assets/images/DANS.gif" height="50">
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="." title="easy-springfield" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title head-type" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              easy-springfield
+              
+            </span>
+            <span class="md-header-nav__topic">
+              
+                Manual
+              
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+<a href="https://github.com/DANS-KNAW/easy-springfield/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    DANS-KNAW/easy-springfield
+  </div>
+</a>
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title head-type md-nav__title--site" for="__drawer">
+    <a href="." title="easy-springfield" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    easy-springfield
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+<a href="https://github.com/DANS-KNAW/easy-springfield/" title="Go to repository" class="md-source" data-md-source="github">
+  
+    <div class="md-source__icon">
+      <svg viewBox="0 0 24 24" width="24" height="24">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    DANS-KNAW/easy-springfield
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active head-type" for="__toc">
+        Manual
+      </label>
+    
+    <a href="." title="Manual" class="md-nav__link md-nav__link--active head-type">
+      Manual
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title head-type" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#synopsis" title="SYNOPSIS" class="md-nav__link head-type">
+    SYNOPSIS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" title="DESCRIPTION" class="md-nav__link head-type">
+    DESCRIPTION
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#springfield-paths" title="Springfield paths" class="md-nav__link head-type">
+    Springfield paths
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#referids" title="Referids" class="md-nav__link head-type">
+    Referids
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examining-raw-springfield-metadata" title="Examining raw Springfield metadata" class="md-nav__link head-type">
+    Examining raw Springfield metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listing-and-creating-containers" title="Listing and creating containers" class="md-nav__link head-type">
+    Listing and creating containers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-videos" title="Adding videos" class="md-nav__link head-type">
+    Adding videos
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-videos-to-existing-presentations-andor-collections" title="Adding videos to existing presentations and/or collections" class="md-nav__link head-type">
+    Adding videos to existing presentations and/or collections
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-report" title="Status report" class="md-nav__link head-type">
+    Status report
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-require-ticket" title="Changing require-ticket" class="md-nav__link head-type">
+    Changing require-ticket
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-and-deleting-tickets" title="Creating and deleting tickets" class="md-nav__link head-type">
+    Creating and deleting tickets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-items" title="Deleting items" class="md-nav__link head-type">
+    Deleting items
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixing-the-springfield-hierarchy" title="Fixing the Springfield hierarchy" class="md-nav__link head-type">
+    Fixing the Springfield hierarchy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-subtitles-to-existing-videos" title="Adding subtitles to existing videos" class="md-nav__link head-type">
+    Adding subtitles to existing videos
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arguments" title="ARGUMENTS" class="md-nav__link head-type">
+    ARGUMENTS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-and-configuration" title="INSTALLATION AND CONFIGURATION" class="md-nav__link head-type">
+    INSTALLATION AND CONFIGURATION
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-from-source" title="BUILDING FROM SOURCE" class="md-nav__link head-type">
+    BUILDING FROM SOURCE
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title head-type" for="__toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#synopsis" title="SYNOPSIS" class="md-nav__link head-type">
+    SYNOPSIS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#description" title="DESCRIPTION" class="md-nav__link head-type">
+    DESCRIPTION
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#springfield-paths" title="Springfield paths" class="md-nav__link head-type">
+    Springfield paths
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#referids" title="Referids" class="md-nav__link head-type">
+    Referids
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examining-raw-springfield-metadata" title="Examining raw Springfield metadata" class="md-nav__link head-type">
+    Examining raw Springfield metadata
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listing-and-creating-containers" title="Listing and creating containers" class="md-nav__link head-type">
+    Listing and creating containers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-videos" title="Adding videos" class="md-nav__link head-type">
+    Adding videos
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-videos-to-existing-presentations-andor-collections" title="Adding videos to existing presentations and/or collections" class="md-nav__link head-type">
+    Adding videos to existing presentations and/or collections
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#status-report" title="Status report" class="md-nav__link head-type">
+    Status report
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-require-ticket" title="Changing require-ticket" class="md-nav__link head-type">
+    Changing require-ticket
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-and-deleting-tickets" title="Creating and deleting tickets" class="md-nav__link head-type">
+    Creating and deleting tickets
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deleting-items" title="Deleting items" class="md-nav__link head-type">
+    Deleting items
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixing-the-springfield-hierarchy" title="Fixing the Springfield hierarchy" class="md-nav__link head-type">
+    Fixing the Springfield hierarchy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-subtitles-to-existing-videos" title="Adding subtitles to existing videos" class="md-nav__link head-type">
+    Adding subtitles to existing videos
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arguments" title="ARGUMENTS" class="md-nav__link head-type">
+    ARGUMENTS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation-and-configuration" title="INSTALLATION AND CONFIGURATION" class="md-nav__link head-type">
+    INSTALLATION AND CONFIGURATION
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#building-from-source" title="BUILDING FROM SOURCE" class="md-nav__link head-type">
+    BUILDING FROM SOURCE
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/DANS-KNAW/easy-springfield/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="manual">MANUAL<a class="headerlink" href="#manual" title="Permanent link">&para;</a></h1>
+<p>Tools for managing a Springfield WebTV server.</p>
+<h2 id="synopsis">SYNOPSIS<a class="headerlink" href="#synopsis" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code>easy-springfield list-users [&lt;domain&gt;]
+easy-springfield list-collections &lt;user&gt; [&lt;domain&gt;]
+easy-springfield create-user &lt;user&gt; [&lt;domain&gt;]
+easy-springfield create-collection [-t, --title &lt;arg&gt;] [-d, --description &lt;arg&gt;] \
+    &lt;collection&gt; &lt;user&gt; [&lt;domain&gt;]
+easy-springfield create-presentation [-t, --title &lt;arg&gt;] [-d, --description &lt;arg&gt;] \
+    [-r, --require-ticket] &lt;user&gt; [&lt;domain&gt;]
+easy-springfield create-springfield-actions [-c, --check-parent-items] [-v, --videos-folder &lt;arg&gt;] \
+    &lt;videos-csv&gt; &gt; springfield-actions.xml
+easy-springfield status [-u, --user &lt;arg&gt;][-d, --domain &lt;arg&gt;]
+easy-springfield set-require-ticket &lt;springfield-path&gt; {true|false}
+easy-springfield set-title --title,-t &lt;title&gt; --video-number,-v &lt;number&gt; &lt;springfield-presentation-path&gt;
+easy-springfield set-play-mode &lt;springfield-presentation-path&gt; {menu|continuous}
+easy-springfield create-ticket [-e,--expires-after-seconds &lt;arg&gt;] [-t, --ticket &lt;arg&gt;] \
+    &lt;springfield-path&gt;
+easy-springfield delete-ticket &lt;ticket&gt;
+easy-springfield delete [-r, --with-referenced-items] &lt;springfield-path&gt;
+easy-springfield add-videoref-to-presentation &lt;video&gt; &lt;name&gt; &lt;presentation&gt;
+easy-springfield add-presentationref-to-collection &lt;presentation&gt; &lt;name&gt; &lt;collection&gt;
+easy-springfield add-subtitles-to-video --language &lt;code&gt; &lt;video&gt; &lt;web-vtt-file&gt;
+easy-springfield add-subtitles-to-presentation --language &lt;code&gt; &lt;presentation&gt; &lt;web-vtt-file&gt;...
+easy-springfield show-available-language-codes
+</code></pre></div>
+
+
+<h2 id="description">DESCRIPTION<a class="headerlink" href="#description" title="Permanent link">&para;</a></h2>
+<p><a href="http://www.noterik.nl/products/webtv_framework/">Springfield Web TV</a> is a platform for delivering A/V media files over the web. Managing
+the hosted content of a Springfield instance can be a rather challenging task, due to the
+lack of supporting tools. <code>easy-springfield</code> provides some commands to ease this task. It
+does <em>not</em> presume to fully automate Springfield management.</p>
+<p>(Note: even though Springfield can also serve audio-only media files, all media files are generall
+referred to as "videos" in the Springfield interface. We will do the same below.)</p>
+<h3 id="springfield-paths">Springfield paths<a class="headerlink" href="#springfield-paths" title="Permanent link">&para;</a></h3>
+<p>Videos in Springfield are stored in a tree-structure. The service <code>smithers2</code> keeps
+track of this structure and offers a RESTful API to it. <code>easy-springfield</code> uses this RESTful
+API. Where the commands require a <code>springfield-path</code> argument, a path into aforementioned tree is intended.</p>
+<p>Some examples:</p>
+<div class="codehilite"><pre><span></span><code>domain/dans/user 
+domain/dans/user/getuigen
+domain/dans/user/getuigen/collection/ww2
+domain/dans/user/getuigen/collection/ww2/presentation/easy-dataset:12345
+domain/dans/user/history/presentation/8
+domain/dans/user/history/video/1
+</code></pre></div>
+
+
+<p>As you can see in the last two examples, presentations and videos are stored directly under the user
+(in this case called "history"). Presentations <em>reference</em> videos by springfield path to include
+them, and collections <em>reference</em> presentations to do the same.</p>
+<p>It is possible to configure a <em>default domain</em>. This allows you to leave out the domain of the springfield
+paths. If you configure the default domain to <code>dans</code> the above examples then become:</p>
+<div class="codehilite"><pre><span></span><code>user 
+user/getuigen
+user/getuigen/collection/ww2
+user/getuigen/collection/ww2/presentation/easy-dataset:12345
+user/history/presentation/8
+user/history/video/1
+</code></pre></div>
+
+
+<p>Everywhere else where a domain must be specified, it will then also default to the value you configured.</p>
+<h4 id="referids">Referids<a class="headerlink" href="#referids" title="Permanent link">&para;</a></h4>
+<p>In some cases springfield paths are used to include an item by reference into another item. For example a
+collection is built up using springfield-paths to presentations. These springfield-paths are then called
+<code>referid</code>s. </p>
+<h3 id="examining-raw-springfield-metadata">Examining raw Springfield metadata<a class="headerlink" href="#examining-raw-springfield-metadata" title="Permanent link">&para;</a></h3>
+<p>Although <code>easy-springfield</code> lets you manage a considerable part of the Springfield repository without your
+having to interact with <code>smithers2</code> directly, it is often convenient to examine its raw output. You can
+construct the smithers-URL of an item as follows:</p>
+<div class="codehilite"><pre><span></span><code>&lt;smithers2-base-uri&gt;/&lt;springfield-path&gt;
+</code></pre></div>
+
+
+<p><code>smithers2-base-uri</code> can be found in <code>application.properties</code>. <code>springfield-path</code> must of course include
+the domain. To get all the metadata for user <code>getuigen</code> in the above example you would therefore open the
+following URL in your browser:</p>
+<div class="codehilite"><pre><span></span><code>http://yourstreamingserver:8080/smithers2/domain/dans/user/getuigen
+</code></pre></div>
+
+
+<p>This is of course assuming that you have access to port 8080 of the server running Springfield. You may 
+have to use an SSH-tunnel if this is not the case:</p>
+<div class="codehilite"><pre><span></span><code>ssh -L 8080:localhost:8080 yourstreamingserver
+
+# In a new terminal window:
+http://localhost:8080/smithers2/domain/dans/user/getuigen
+</code></pre></div>
+
+
+<p>The XML that is returned by Springfield will not be documented here, but for the most part is fairly 
+easy to understand. Most of the subcommands supported by <code>easy-springfield</code> use this XML to implement
+their functionality.</p>
+<h3 id="listing-and-creating-containers">Listing and creating containers<a class="headerlink" href="#listing-and-creating-containers" title="Permanent link">&para;</a></h3>
+<p>As discussed before, the videos are stored as leaves of a tree structure. The parent elements
+of that structure can, in part, be examined and managed by <code>easy-springfield</code>. </p>
+<p>Currently it is only possible to list the users (in a given domain) and collections (of a given user).
+To get a list of the items in a presentation, retrieve the raw Springfield metadata as explained in the previous
+section.</p>
+<p>Users and collections can be created with the subcommands <code>create-user</code> and <code>create-collection</code>. In
+contrast to the command to add videos to Springfield - discussed below - these subcommands will
+<em>not</em> create Springfield actions XML, but in fact create the specified items in Springfield directly.</p>
+<h3 id="adding-videos">Adding videos<a class="headerlink" href="#adding-videos" title="Permanent link">&para;</a></h3>
+<p>Since Springfield can only add videos that are placed in its inbox, it is not possible to add them
+directly via a subcommand. Instead, the subcommand <code>create-springfield-actions</code> generates the XML
+that must be placed with the video files in the inbox. The input for this subcommand is a CSV file
+containing the required metadata about the videos. The columns are defined by the following headers:</p>
+<ul>
+<li><code>SRC-VIDEO</code> - the relative path to the video file in <code>springfield-inbox</code> </li>
+<li><code>DOMAIN</code> - (optional) the domain under which to add the video (must exist); if not specified: the default domain</li>
+<li><code>USER</code> - the user under which to add the video (must exist)</li>
+<li><code>COLLECTION</code> - the collection under which to add the video (must exist)</li>
+<li><code>PRESENTATION</code> - the presentation under which to add the video (<strong>must not</strong> exist; will be created)</li>
+<li><code>TARGET-VIDEO</code> - (optional) the name of the video in Springfield; if not specified: the base name of <code>SRC-VIDEO</code></li>
+<li><code>REQUIRE-TICKET</code> - whether an authorization ticket is required to play the video (<code>true</code> of <code>false</code>) </li>
+</ul>
+<p>The subcommand will print the XML directly to the standard output, so to use it you will have to redirect STDOUT
+to a file. The OK/error messages will not interfere, as they will be printed on STDERR rather than STDOUT.</p>
+<p>The subcommand can optionally check if the hierarchy in which to store the videos exists, as this is a
+precondition for subsequent successful processing by Springfield. Likewise, it can check if the videos
+actually exist in a specified folder. </p>
+<p>In summary, to add a folder with videos to Springfield you would perform the following steps:</p>
+<ol>
+<li>Create a CSV-file (or you might start with a spreadsheet).</li>
+<li>Add the column headers mentioned above (at least the mandatory ones).</li>
+<li>Add to the <code>SRC-VIDEO</code> header: the paths of the videos relative to the <em>parent</em> of the folder that you plan to move 
+  to the springfield-inbox.</li>
+<li>Fill in the other columns to specify the desired situation in Springfield.</li>
+<li>Save/export the CSV-file, say, to myvideos.csv</li>
+<li>Run <code>easy-springfield -v /path/to/videos -p myvideos.csv &gt; videos01.xml</code>. Now, if <code>/path/to/videos</code> contains one subdirectory
+   called <code>videos01</code> and all the paths in <code>SRC-VIDEO</code> start with <code>videos01/...</code>  the tool will check if you are all
+   set to move <code>videos01</code> to the springfield-inbox. (You may of course want to run this command first <em>without</em>
+   redirecting the output to <code>videos01.xml</code>, to check if the generated XML looks OK.)</li>
+<li>To be sure that there are no ownership issues <code>chmod 777</code> everything in <code>videos01</code> and also <code>videos01.xml</code>. </li>
+<li>Move (or copy) the directory <code>videos01</code> to the springfield-inbox. (Note: do this as the <code>easy-ingest-flow</code> user!)</li>
+<li>Move (or copy) the Springfield actions file <code>videos01.xml</code> to the springfield-inbox.  (Note: do this as the <code>easy-ingest-flow</code> user!)</li>
+</ol>
+<p>The Springfield service <code>uter</code> checks the inbox once a minute for new files. Processing the videos may take a while,
+so at this point you might go off and take care of some other task. To check the status you can run the <code>status</code>
+subcommand from time to time (see next section).</p>
+<p>To debug any problems, it is best to examine <code>uter</code>'s  log file at <code>/var/log/tomcat/uter/uter.log</code>. </p>
+<h4 id="adding-videos-to-existing-presentations-andor-collections">Adding videos to existing presentations and/or collections<a class="headerlink" href="#adding-videos-to-existing-presentations-andor-collections" title="Permanent link">&para;</a></h4>
+<p>To add missing videos to existing presentations and/or collections you will first need to:</p>
+<ol>
+<li>Create a temporary collection under the parent user;</li>
+<li>add the videos in the normal way described above;</li>
+<li>add the references to the videos (or to the presentations) to the existing presentations (or collections). Using
+   the <a href="fixing-the-springfield-hierarchy">command described below</a>;</li>
+<li>delete the temporary (presentations and) collection using the <code>delete</code> subcommand, <strong>without the <code>-r</code> option</strong> (or 
+   you will end up removing the videos as well).</li>
+</ol>
+<h3 id="status-report">Status report<a class="headerlink" href="#status-report" title="Permanent link">&para;</a></h3>
+<p>Processing the videos in the inbox takes a while. The <code>status</code> command generates a report that 
+lists the A/V items and their current status (<code>DONE</code>, <code>WAITING</code> or <code>FAILED</code>). Note that items that have not (yet)
+been successfully processed by Springfield's inbox service Uter will not appear in the status report at all.</p>
+<h3 id="changing-require-ticket">Changing require-ticket<a class="headerlink" href="#changing-require-ticket" title="Permanent link">&para;</a></h3>
+<p>You can change videos from public to private and vice versa with the <code>set-require-ticket</code> subcommand. This command
+changes all the videos under a given parent, so you can change collections and users at a time. Before making the
+actual changes you are requested to confirm.</p>
+<h3 id="creating-and-deleting-tickets">Creating and deleting tickets<a class="headerlink" href="#creating-and-deleting-tickets" title="Permanent link">&para;</a></h3>
+<p>For debugging purposes it is sometimes convenient to manually create authorization tickets for presentations. 
+The <code>create-ticket</code> and <code>delete-ticket</code> enable you to do exactly that. You can optionally provided the ticket yourself and 
+specify the number of seconds it must be valid. However, it is better to let easy-springfield generated the ticket for you,
+as it will use a UUID, which tends to be more secure than any ticket number that you will think of yourself.</p>
+<p>Viewing the list of current tickets is <em>not</em> supported. However, the Springfield Lenny service provides an HTML-based list
+for this at <code>http://yourstreamingserver:8080/lenny/acl/ticket</code>.</p>
+<h3 id="deleting-items">Deleting items<a class="headerlink" href="#deleting-items" title="Permanent link">&para;</a></h3>
+<p>You can delete videos, presentations and collections with the <code>delete</code> subcommand. Users cannot currently be 
+deleted, even if they contain no resources anymore. This seems a bug in Springfield, as&mdash;over time&mdash;it will inevitably
+result in an increasing number of unused "user" resources. The <code>-r</code> option lets you include all the referenced resources
+in a delete action. This way you can delete a whole collection without first having to manually delete all the 
+resources referenced by it. Again, the user is asked to confirm such a delete action.</p>
+<p>Please, note that the data on disk will <em>not</em> be cleaned up by Springfield. If you are using this command a lot you will be
+faced with an increasing amount of wasted disk space.</p>
+<h3 id="fixing-the-springfield-hierarchy">Fixing the Springfield hierarchy<a class="headerlink" href="#fixing-the-springfield-hierarchy" title="Permanent link">&para;</a></h3>
+<p>To fix problems in the Springfield hierarchy the following subcommands can be used.</p>
+<ul>
+<li><code>add-videoref-to-presentation</code> - this adds a video that is already in Springfield to a presentation.</li>
+<li><code>add-presentationref-to-collection</code> - this adds a presentation that is already in Springfield to a collection.</li>
+</ul>
+<p>Together with the <code>delete</code> subcommand, used without the <code>-r</code> option, it is possible to repair the Springfield hierarchy, if it
+becomes corrupted.</p>
+<h3 id="adding-subtitles-to-existing-videos">Adding subtitles to existing videos<a class="headerlink" href="#adding-subtitles-to-existing-videos" title="Permanent link">&para;</a></h3>
+<p>For videos that have been ingested without subtitles, you can still add those later. You will need to execute this command
+as the <code>tomcat</code> user, so that it can write the subtitles files to the  <code>/data/dansstreaming</code> directory tree.</p>
+<ul>
+<li><code>add-subtitles-to-video</code> - this adds a subtitles file to an existing video.</li>
+<li><code>add-subtitles-to-presentation</code> - this adds subtitles files to the videos in an existing presentation.</li>
+</ul>
+<h2 id="arguments">ARGUMENTS<a class="headerlink" href="#arguments" title="Permanent link">&para;</a></h2>
+<div class="codehilite"><pre><span></span><code>    -h, --help      Show help message
+      -v, --version   Show version of this program
+
+    Subcommand: list-users - Lists users in a given domain
+      -h, --help   Show help message
+
+     trailing arguments:
+      domain (not required)   the domain of which to list the users (default = dans)
+    ---
+
+    Subcommand: list-collections - Lists the collections of a user in a given domain
+      -h, --help   Show help message
+
+     trailing arguments:
+      user (required)         the user whose collections to list
+      domain (not required)   the domain containing the user (default = dans)
+    ---
+
+    Subcommand: create-user - Creates a new user in the Springfield database. This does NOT generate a springfield-actions XML but
+    instead creates the user in Springfield right away.
+
+      -h, --help   Show help message
+
+     trailing arguments:
+      user (required)         user name for the new user
+      domain (not required)   the target domain in which to create the user
+                              (default = dans)
+    ---
+
+    Subcommand: create-collection - Creates a new collection in the Springfield database. This does NOT generate a springfield-actions XML but
+    instead creates the collection in Springfield right away.
+
+      -d, --description  &lt;arg&gt;   Description for the new collection (default = )
+      -t, --title  &lt;arg&gt;         Title for the new collection (default = )
+      -h, --help                 Show help message
+
+     trailing arguments:
+      collection (required)   name for the collection
+      user (required)         existing user under which to store the collection
+      domain (not required)   the target domain in which to create the collection
+                              (default = dans)
+    ---
+
+    Subcommand: create-presentation - Creates a new, empty presentation in the Springfield database, to be populated with the add-video-to-presentation command.
+
+      -d, --description  &lt;arg&gt;   description for the new presentation (default = )
+      -r, --require-ticket       whether to require a ticket before playing the
+                                 presentation (private audio/video) or not (public
+                                 audio/video)
+      -t, --title  &lt;arg&gt;         title for the new presentation (default = )
+      -h, --help                 Show help message
+
+     trailing arguments:
+      user (required)         existing user under which to store the collection
+      domain (not required)   the target domain in which to create the presentation
+                              (default = dans)
+    ---
+
+    Subcommand: create-springfield-actions - Create Springfield Actions XML containing add-actions for A/V items specified in a CSV file
+    with lines describing videos with the following columns: SRC, DOMAIN, USER, COLLECTION, PRESENTATION, FILE,
+    REQUIRE-TICKET.
+
+      -c, --check-parent-items     check that parent items (domain, user,
+                                   collection) exist
+      -v, --videos-folder  &lt;arg&gt;   folder relative to which to resolve the SRC
+                                   column in the CSV
+      -h, --help                   Show help message
+
+     trailing arguments:
+      video-csv (required)   CSV file describing the videos
+    ---
+
+    Subcommand: status - Retrieves the status of content offered for ingestion into Springfield.
+      -d, --domain  &lt;arg&gt;   limit to videos within this domain (default = dans)
+      -u, --user  &lt;arg&gt;     limit to videos owned by this user
+      -h, --help            Show help message
+    ---
+
+    Subcommand: set-require-ticket - Sets or clears the &#39;require-ticket&#39; flag for the specified presentation.
+      -h, --help   Show help message
+
+     trailing arguments:
+      springfield-path (required)   the parent of items to change
+      require-ticket (required)     true or false: whether to require a ticket
+                                    before playing the presentation (private
+                                    audio/video) or not (public audio/video)
+    ---
+
+    Subcommand: set-title - Sets the title of a video/audio within a presentation. The springfield-presentation-path must be either a direct presentation referid
+     or full path that can be resolved to a presentation.
+      -t, --title  &lt;arg&gt;          The (new) name of the video/audio element with a
+                                  presentation
+      -v, --video-number  &lt;arg&gt;   The number/ index of the video within the
+                                  presentation (default = 1)
+      -h, --help                  Show help message
+
+     trailing arguments:
+      presentation (required)   referid of the presentation
+    ---
+
+    Subcommand: set-play-mode - Sets the play-mode property of the presentation as specified. The springfield-presentation-path
+          must be either a direct presentation referid or full path that can be resolved to a presentation.
+      -h, --help   Show help message
+
+     trailing arguments:
+      springfield-presentation-path (required)   the parent of items to change
+      mode (required)                            The play mode of the presentation
+                                                 which is either &#39;menu&#39; or
+                                                 &#39;continuous&#39;
+    ---
+
+    Subcommand: create-ticket - Creates and registers an authorization ticket for a specified presentation.
+    If no ticket is specificied a random one is generated.
+      -e, --expires-after-seconds  &lt;arg&gt;    (default = 300)
+      -t, --ticket  &lt;arg&gt;                  the ticket to assign
+      -h, --help                           Show help message
+
+     trailing arguments:
+      springfield-path (required)   the presentation to create the ticket for
+    ---
+
+    Subcommand: delete-ticket - Deletes a specified authorization ticket.
+      -h, --help   Show help message
+
+     trailing arguments:
+      ticket (required)   the ticket to delete
+    ---
+
+    Subcommand: delete - Deletes the item at the specified Springfield path.
+      -r, --with-referenced-items   also remove items reference from &lt;path&gt;,
+                                    recursively
+      -h, --help                    Show help message
+
+     trailing arguments:
+      path (required)   the path pointing item to remove
+    ---
+
+    Subcommand: add-videoref-to-presentation - Adds a videoref to a presentation under a specified name. The video must already exist in Springfield.
+      -h, --help   Show help message
+
+     trailing arguments:
+      video (required)          referid of the video
+      name (required)           name to assign to the video in the presentation
+      presentation (required)   the presentation, either a Springfield path or a
+                                referid
+    ---
+
+    Subcommand: add-presentationref-to-collection - Adds a presentation to a collection under a specified name. The presentation must already exist in Springfield
+      -h, --help   Show help message
+
+     trailing arguments:
+      presentation (required)   referid of the presentation
+      name (required)           name to assign to the presentation in the collection
+      collection (required)     the Springfield path of the collection
+    ---
+
+    Subcommand: add-subtitles-to-video - Adds a subtitles file to an existing video.
+      -l, --language  &lt;arg&gt;   the ISO 639-1 (two letter) language code
+      -h, --help              Show help message
+
+     trailing arguments:
+      video (required)         the referid of the video
+      webvtt-file (required)   path to the WebVTT subtitles file to add
+    ---
+
+    Subcommand: add-subtitles-to-presentation -
+     Adds one or more subtitles file(s) to an existing presentation. If the presentation contains multiple videos
+     the same number of WebVTT files must be specified; they will be added in the specified order to the respective videos.
+
+      -l, --language  &lt;arg&gt;   the ISO 639-1 (two letter) language code
+      -h, --help              Show help message
+
+     trailing arguments:
+      presentation (required)     referid of the presentation
+      webvtt-file(s) (required)   path to the WebVTT subtitles file(s) to add
+    ---
+
+    Subcommand: show-available-language-codes - 
+     Prints a list of all language codes that are currently supported by the ISO639-1 standard
+
+       -h, --help   Show help message
+    ---
+</code></pre></div>
+
+
+<h2 id="installation-and-configuration">INSTALLATION AND CONFIGURATION<a class="headerlink" href="#installation-and-configuration" title="Permanent link">&para;</a></h2>
+<p>Currently this project is built as an RPM package for RHEL7/CentOS7 and later. The RPM will install the binaries to
+<code>/opt/dans.knaw.nl/easy-springfield</code> and the configuration files to <code>/etc/opt/dans.knaw.nl/easy-springfield</code>. </p>
+<p>To install the module on systems that do not support RPM, you can copy and unarchive the tarball to the target host.
+You will have to take care of placing the files in the correct locations for your system yourself. For instructions
+on building the tarball, see next section.</p>
+<h2 id="building-from-source">BUILDING FROM SOURCE<a class="headerlink" href="#building-from-source" title="Permanent link">&para;</a></h2>
+<p>Prerequisites:</p>
+<ul>
+<li>Java 8 or higher</li>
+<li>Maven 3.3.3 or higher</li>
+<li>RPM</li>
+</ul>
+<p>Steps:</p>
+<div class="codehilite"><pre><span></span><code>git clone https://github.com/DANS-KNAW/easy-springfield.git
+cd easy-springfield
+mvn install
+</code></pre></div>
+
+
+<p>If the <code>rpm</code> executable is found at <code>/usr/local/bin/rpm</code>, the build profile that includes the RPM 
+packaging will be activated. If <code>rpm</code> is available, but at a different path, then activate it by using
+Maven's <code>-P</code> switch: <code>mvn -Pprm install</code>.</p>
+<p>Alternatively, to build the tarball execute:</p>
+<div class="codehilite"><pre><span></span><code>mvn clean install assembly:single
+</code></pre></div>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        <div>
+          
+          powered by
+          <a href="https://www.mkdocs.org">MkDocs</a>
+          and
+          <a href="https://squidfunk.github.io/mkdocs-material/">
+            Material for MkDocs</a>
+          customised by
+          <a href="https://github.com/Dans-labs">Dans-labs</a>
+        </div>
+      </div>
+      <div class="md-footer-dans">
+  <div>DANS is an institute of KNAW and NWO</div>
+  <div>
+    <a href="https://dans.knaw.nl/en" title="Data Archiving and Networked Services (DANS)"><img class="md-footer-dans__img" src="assets/images/DANS.gif" height="50"></a>
+    <a target="_blank" href="https://www.knaw.nl/en"><img src="assets/images/knaw.png" height="50"></a>
+    <a target="_blank" href="https://www.nwo.nl/en"><img src="assets/images/nwo.png" height="50"></a>
+  </div>
+  <div><i>Driven by data</i></div>
+</div>
+      
+  <link rel="stylesheet" href="assets/fonts/font-awesome.css">
+  <style>.md-footer-social__desc{font-family:"Open Sans",sans-serif;-webkit-font-smoothing:auto}</style>
+  <ul class="md-footer-social">
+    
+    <li class="md-footer-social__li">
+      <a href="http://eepurl.com/dvnr8D" class="md-footer-social__link fa fa-envelope-square">
+        <span class="md-footer-social__desc">Newsletter</span>
+      </a>
+    </li>
+    
+    <li class="md-footer-social__li">
+      <a href="https://twitter.com/DANSKNAW" class="md-footer-social__link fa fa-twitter-square">
+        <span class="md-footer-social__desc">Twitter</span>
+      </a>
+    </li>
+    
+    <li class="md-footer-social__li">
+      <a href="https://www.youtube.com/user/DANSDataArchiving" class="md-footer-social__link fa fa-youtube-square">
+        <span class="md-footer-social__desc">YouTube</span>
+      </a>
+    </li>
+    
+    <li class="md-footer-social__li">
+      <a href="https://www.linkedin.com/company/dans" class="md-footer-social__link fa fa-linkedin-square">
+        <span class="md-footer-social__desc">LinkedIn</span>
+      </a>
+    </li>
+    
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="assets/javascripts/application.f780ca69.js"></script>
+      
+      <script>app.initialize({version:"1.0.4",url:{base:"."}})</script>
+      
+    
+  </body>
+</html>
