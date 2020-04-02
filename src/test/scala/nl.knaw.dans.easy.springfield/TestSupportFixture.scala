@@ -15,6 +15,8 @@
  */
 package nl.knaw.dans.easy.springfield
 
-import org.scalatest.{ FlatSpec, Matchers, OneInstancePerTest }
+import org.scalatest.OneInstancePerTest
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-trait TestSupportFixture extends FlatSpec with Matchers with OneInstancePerTest
+trait TestSupportFixture extends AnyFlatSpec with Matchers with OneInstancePerTest

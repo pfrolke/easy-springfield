@@ -18,9 +18,11 @@ package nl.knaw.dans.easy.springfield
 import java.net.URI
 import java.nio.file.{ Path, Paths }
 
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class AddSubtitlesSpec extends FlatSpec with Matchers with CustomMatchers with AddSubtitles with Smithers2 {
+
+class AddSubtitlesSpec extends AnyFlatSpec with Matchers with CustomMatchers with AddSubtitles with Smithers2 {
   override val springFieldDataDir: Path = Paths.get("/data/dansstreaming")
   override val smithers2BaseUri: URI = new URI("http://localhost:8080/smithers2/")
   override val smithers2ConnectionTimeoutMs: Int = 100000

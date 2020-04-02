@@ -19,9 +19,10 @@ import java.io.{ ByteArrayOutputStream, File }
 import java.nio.file.Paths
 
 import org.apache.commons.configuration.PropertiesConfiguration
-import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class ReadmeSpec extends FlatSpec with Matchers with CustomMatchers {
+class ReadmeSpec extends AnyFlatSpec with Matchers with CustomMatchers {
 
   val mockedConfigurationProperties = new PropertiesConfiguration() {
     setDelimiterParsingDisabled(true)
